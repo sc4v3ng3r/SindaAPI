@@ -1,0 +1,14 @@
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/parser/SindaPcdParser.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/applications/DataMiningApplication.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/utility/DateTimeUtils.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/exemplos/SindaDataFetcherMain.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/network/SindaURLs.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/network/SindaDataFetcher.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/model/PcdData.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/exemplos/ProgramaExemplo.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/network/QueryParameters.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/network/SindaRequestParameters.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/model/Pcd.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/network/SindaWebpageFetcher.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/network/SindaRequestHeaders.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/exemplos/ExemploPegarTodasAsPCDs.java
