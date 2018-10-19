@@ -1,3 +1,9 @@
+#directories
+./target/classes/
+./target/test-classes/
+./target/generated-sources/
+./files
+
 # Compiled source #
 ###################
 *.com
