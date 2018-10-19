@@ -10,12 +10,12 @@ import br.inpe.crn.sinda.network.SindaDataFetcher;
 import br.inpe.crn.sinda.network.SindaWebpageFetcher;
 import br.inpe.crn.sinda.parser.SindaPcdParser;
 import br.inpe.crn.sinda.utility.DateTimeUtils;
-import com.fasterxml.jackson.core.PrettyPrinter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,9 +32,11 @@ import org.jsoup.nodes.Document;
  * @author scavenger
  */
 public class DataMiningApplication {
-    public static final String DIR = "files/";
+    public static final String DIR = "files";
+    public static final File m_filesDirectory = new File(DIR);
+    
     private static final PcdGettingDataDetailsTask.TaskListener listeter = new PcdGettingDataDetailsTask.TaskListener() {
-
+      
         @Override
         public void taskFinished(List<Pcd> pcdList) {
             System.out.println("DONE!");
@@ -43,7 +45,12 @@ public class DataMiningApplication {
 
     };
 
-    public static final void main(String args[]) {
+    public static final void main(String args[])  {
+        if ( !m_filesDirectory.exists()){
+            m_filesDirectory.mkdir();
+        }
+        
+        //if ( )
         SindaDataFetcher dataFetcher = new SindaDataFetcher();
 
         // a ideia sera dividir essa lista em 3 ou 4 partes e separar o trabalho de mineracao em 3 ou 4 threads
@@ -61,6 +68,7 @@ public class DataMiningApplication {
         executor.shutdown();
     }
 
+    
     static class PcdGettingDataDetailsTask implements Runnable {
 
         private List<Pcd> m_pcdList;
@@ -81,7 +89,7 @@ public class DataMiningApplication {
             
             Date currentDate = Calendar.getInstance().getTime();
             SimpleDateFormat dateFormat = DateTimeUtils.getInstance(DateTimeUtils.DATE_TIME_FORMAT);
-
+            
             for (int i = 0; i < m_pcdList.size(); i++) {
                 Pcd pcd = m_pcdList.get(i);
                 System.out.println("Thread: " + Thread.currentThread().getName() + " GETTING DATA FOR PCD: " + pcd.getId());
@@ -91,10 +99,13 @@ public class DataMiningApplication {
 
                 // ja realizar a subrotina de buscar os dados!
                 // write in JSON FILE!
-                String filename = DIR + String.valueOf( pcd.getId() )
-                        .concat("-"+dateFormat.format(currentDate)).concat(".json");
                 
+                
+                String filename = m_filesDirectory.getPath() + File.separator + String.valueOf(pcd.getId()) + "-" + pcd.getEstacao()
+                        + "-" + dateFormat.format(currentDate) + ".json";
+               
                 try {
+                   
                     System.out.println("Thread: " + Thread.currentThread().getName() +" writing file: " + filename);
                     writer.writeValue(new File(filename), pcd);
                 } 
