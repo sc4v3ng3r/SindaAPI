@@ -169,100 +169,17 @@ public class SindaWebpageFetcher {
         }
         
         // OCASIONA NULL POINTER EXCEPTION
-        System.out.println( "TOTAL </tr> " + dataTablePage.getElementsByTag("tr").size()  );
+        if (dataTablePage != null){
+              System.out.println( Thread.currentThread().getName() + " TOTAL TABLE LINES RESULTS  " + dataTablePage.getElementsByTag("tr").size()   );
+        } 
+        else {
+             System.out.println( Thread.currentThread().getName() + " EMPTY TABLE" );
+        }
+          
         return dataTablePage;
     }
     
-    @Deprecated
-    public boolean downloadPcdDataXls(final QueryParameters param) {
-        
-        /*
-        TENTATIVA 01
-        ESSE CODIGO FUNCIONA PERFEITAMENTE!
-        aqui obtem-se o arquivo xls do servidor, entretanto ele vem
-        em um formato que a biblioteca POI e programas leitores de XLS
-        acusam formato incompativel. Os programas conseguem importar, 
-        porem, com a lib POI ainda nao obtive sucesso em abrir o arquivo baixado.*/
-        String fileName = "";
-
-        try {
-
-            URL url = new URL(SindaURLs.PCD_DATA_QUERY_URL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setConnectTimeout(timeout);
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-
-            setDefaultRequestHeaders( connection );
-
-            byte[] bytes = getQueryParamBytes(param);
-            connection.addRequestProperty( SindaRequestHeaders.PROPERTY_CONTENT_LENGTH,
-                    String.valueOf( bytes.length) );
-
-            // escrevndo os parametros de consulta na saida !
-            try (DataOutputStream writer = new DataOutputStream( connection.getOutputStream())) {
-                writer.write(bytes);
-                writer.flush();
-                writer.close();
-            }
-
-            int code = connection.getResponseCode();
-            if (code == HttpURLConnection.HTTP_OK) {
-
-                String disposition = connection.getHeaderField("Content-Disposition");
-
-                String contentType = connection.getContentType();
-                int contentLength = connection.getContentLength();
-                System.out.println("Content length: " + contentLength);
-
-                // obtendo nome do arquivo!
-                if (disposition != null) {
-                    int index = disposition.indexOf("filename=");
-
-                    if (index > 0) {
-                        fileName = disposition.substring(index + 10,
-                                disposition.length());
-                        fileName = fileName.replace("\"", "");
-                    }
-                }
-
-                System.out.println("Downloading " + fileName);
-                
-                InputStream httpInput = connection.getInputStream();
-
-                FileOutputStream output = new FileOutputStream(fileName);
-                //ByteArrayOutputStream output = new ByteArrayOutputStream();
-                
-                int bytesReaded = -1;
-                byte[] buffer = new byte[5 * 1024];
-
-                while ( (bytesReaded = httpInput.read(bytes) ) != -1 ) {
-                    output.write(bytes, 0, bytesReaded);
-                    output.flush();
-                }
-
-                output.close();
-                httpInput.close();
-                System.out.println("DOWLOAD FINISHED!");
-            }
-
-            connection.disconnect();
-
-            //readingXlsFile("/home/scavenger/NetBeansProjects/SindaDataFetcher/32545.xls");
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
-        
-        } catch (IOException exception) {
-            System.out.println(exception);
-
-        }
-        return true;
-        
-    }
-    
-    /**
-     * 
+    /** 
      * @param con 
      */
     private void setDefaultRequestHeaders(HttpURLConnection con) {

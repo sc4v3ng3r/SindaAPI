@@ -20,7 +20,7 @@ public class PcdData {
     private long id;
     
     private Date dataHoraColeta;
-    private String data;
+    private String dataValues;
     private String dataColumns;
 
     // necessario para o hibernate
@@ -29,7 +29,7 @@ public class PcdData {
     public PcdData(PcdDataBuilder builder){
         this.id = builder.id;
         this.dataHoraColeta = builder.dataHoraColeta;
-        this.data = builder.data;
+        this.dataValues = builder.data;
         this.dataColumns = builder.dataColumns;
     }
     
@@ -50,11 +50,11 @@ public class PcdData {
     }
 
     public String getData() {
-        return data;
+        return dataValues;
     }
 
     public void setData(String pcdData) {
-        this.data = pcdData;
+        this.dataValues = pcdData;
     }
 
     public String getDataColumns() {
@@ -69,7 +69,7 @@ public class PcdData {
     public String toString() {
         return /*"ID: " + this.id + " + " Hora coleta: " + this.dataHoraColeta +*/
                 "\n data columns: " + this.dataColumns
-                +"\n DATA: " + this.data;
+                +"\n DATA: " + this.dataValues;
     }
     
     public static class PcdDataBuilder{

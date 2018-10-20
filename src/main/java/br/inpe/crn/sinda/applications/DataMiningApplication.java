@@ -6,6 +6,8 @@
 package br.inpe.crn.sinda.applications;
 
 import br.inpe.crn.sinda.model.Pcd;
+import br.inpe.crn.sinda.model.PcdData;
+import br.inpe.crn.sinda.network.QueryParameters;
 import br.inpe.crn.sinda.network.SindaDataFetcher;
 import br.inpe.crn.sinda.network.SindaWebpageFetcher;
 import br.inpe.crn.sinda.parser.SindaPcdParser;
@@ -32,11 +34,12 @@ import org.jsoup.nodes.Document;
  * @author scavenger
  */
 public class DataMiningApplication {
+
     public static final String DIR = "files";
     public static final File m_filesDirectory = new File(DIR);
-    
+
     private static final PcdGettingDataDetailsTask.TaskListener listeter = new PcdGettingDataDetailsTask.TaskListener() {
-      
+
         @Override
         public void taskFinished(List<Pcd> pcdList) {
             System.out.println("DONE!");
@@ -45,11 +48,11 @@ public class DataMiningApplication {
 
     };
 
-    public static final void main(String args[])  {
-        if ( !m_filesDirectory.exists()){
+    public static final void main(String args[]) {
+        if (!m_filesDirectory.exists()) {
             m_filesDirectory.mkdir();
         }
-        
+
         //if ( )
         SindaDataFetcher dataFetcher = new SindaDataFetcher();
 
@@ -68,7 +71,6 @@ public class DataMiningApplication {
         executor.shutdown();
     }
 
-    
     static class PcdGettingDataDetailsTask implements Runnable {
 
         private List<Pcd> m_pcdList;
@@ -84,39 +86,79 @@ public class DataMiningApplication {
 
         @Override
         public void run() {
-            m_mapper = new ObjectMapper( );
-            ObjectWriter writer = m_mapper.writer( new DefaultPrettyPrinter() );
-            
+            m_mapper = new ObjectMapper();
+            ObjectWriter writer = m_mapper.writer(new DefaultPrettyPrinter());
+
             Date currentDate = Calendar.getInstance().getTime();
-            SimpleDateFormat dateFormat = DateTimeUtils.getInstance(DateTimeUtils.DATE_TIME_FORMAT);
-            
+            SimpleDateFormat dateFormat = DateTimeUtils.getInstance(DateTimeUtils.DATE_FORMAT_FOR_FILE);
+
             for (int i = 0; i < m_pcdList.size(); i++) {
                 Pcd pcd = m_pcdList.get(i);
                 System.out.println("Thread: " + Thread.currentThread().getName() + " GETTING DATA FOR PCD: " + pcd.getId());
                 Document webPage = m_webPageFetcher.fetchPcdInfoPage(pcd.getId(), true);
                 m_parser.parsePcdInfo(webPage, pcd);
-                System.out.println("PCD  " + pcd.getId() + " [DATA OK!] " + Thread.currentThread().getName());
+                System.out.println("PCD  " + pcd.getId() + " [DATA INFO OK!] " + Thread.currentThread().getName());
 
                 // ja realizar a subrotina de buscar os dados!
                 // write in JSON FILE!
-                
-                
-                String filename = m_filesDirectory.getPath() + File.separator + String.valueOf(pcd.getId()) + "-" + pcd.getEstacao()
-                        + "-" + dateFormat.format(currentDate) + ".json";
-               
+                List<PcdData> dataList = queringData(pcd);
+                if (!dataList.isEmpty()) {
+                    System.out.println("PCD  " + pcd.getId() + " [DATA OK!] " + Thread.currentThread().getName());
+                    pcd.setData(dataList);
+                }
+
+                String filename = m_filesDirectory.getPath() + File.separator + String.valueOf(pcd.getId()) + "-" + (pcd.getEstacao().replace(" ", "_"))
+                        + "-" + pcd.getUf() + "-" + dateFormat.format(currentDate) + ".json";
+
                 try {
-                   
-                    System.out.println("Thread: " + Thread.currentThread().getName() +" writing file: " + filename);
+
+                    System.out.println("Thread: " + Thread.currentThread().getName() + " writing file: " + filename);
                     writer.writeValue(new File(filename), pcd);
-                } 
-                
-                catch (IOException ex) {
+                } catch (IOException ex) {
                     Logger.getLogger(DataMiningApplication.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
             m_listener.taskFinished(m_pcdList);
             //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        private List<PcdData> queringData(Pcd pcd) {
+            Date periodoInicial = pcd.getPeriodoInicial();
+            Date periodoFinal = pcd.getPeriodoFinal();
+            Calendar calendar;
+            List<PcdData> dataList = new ArrayList<>();
+
+            if ((periodoInicial != null) && (periodoFinal != null)) {
+                calendar = Calendar.getInstance();
+                calendar.setTime(periodoInicial);
+
+                Date queryPi = periodoInicial;
+                calendar.add(Calendar.YEAR, 1);
+                Date queryPf = calendar.getTime();
+                QueryParameters param = new QueryParameters.QueryParametersBuilder()
+                        .id(pcd.getId())
+                        .dataInicial(queryPi)
+                        .dataFinal(queryPf)
+                        .build();
+                
+                do {
+                    Document dataDocument = m_webPageFetcher.fetchPcdDataTablePage(param);
+                    dataList.addAll( m_parser.parsePcdDataTable(dataDocument) );
+                    
+                    calendar.setTime(queryPf);
+                    calendar.add(Calendar.DATE, 1);
+                    queryPi = calendar.getTime();
+                    calendar.add(Calendar.YEAR, 1);
+                    queryPf = calendar.getTime();
+
+                    param.setDataInicial(queryPi);
+                    param.setDataFinal(queryPf);
+
+                } while (queryPi.compareTo(periodoFinal) <= 0);
+
+            }
+            return dataList;
         }
 
         public interface TaskListener {

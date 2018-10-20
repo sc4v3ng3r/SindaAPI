@@ -54,10 +54,10 @@ public class SindaDataFetcherMain {
                  .id( myPcd.getId() )
                  .dataInicial(dataInicial)
                  .dataFinal(dataFinal)
-                 .build();
-         
+                 .build(); 
          
          List<PcdData> dataList =  parser.parsePcdDataTable( fetcher.fetchPcdDataTablePage(query) );
+        
          
          for(PcdData data: dataList){
              System.out.println( data );
