@@ -20,6 +20,7 @@ public class ExemploPegarTodasAsPCDs {
      * @param args 
      */
    public static void main(String args[]){
+       /*
        SindaWebpageFetcher pageFetcher = new SindaWebpageFetcher();
        SindaPcdParser parser = new SindaPcdParser();
        
@@ -41,6 +42,6 @@ public class ExemploPegarTodasAsPCDs {
        parser.parsePcdInfo( pcdInfoWebPage, pcdQualquer);
        System.out.println("PCD COM TODAS AS INFOS");
        System.out.println(pcdQualquer);
-       
+       */
    }
 }

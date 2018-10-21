@@ -21,6 +21,7 @@ import br.inpe.crn.sinda.parser.SindaPcdParser;
 public class ProgramaExemplo {
     
     public static void main(String args[]){
+        /*
         SindaWebpageFetcher fecher = new SindaWebpageFetcher();
         SindaPcdParser parser = new SindaPcdParser();
         
@@ -55,14 +56,14 @@ public class ProgramaExemplo {
             System.out.println( data);
         }
         
-        System.out.println("TOTAL: " + dataList.size());*/
+        System.out.println("TOTAL: " + dataList.size());
         
         SindaDataFetcher dataFetcher = new SindaDataFetcher();
         
         List<Pcd> pcdList = dataFetcher.getPcdListWithFullInfo();
         for(Pcd pcd: pcdList){
             System.out.println( pcd );
-        }
+        }*/
     }
     
 }

@@ -17,12 +17,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -32,18 +32,19 @@ import org.jsoup.nodes.Document;
 /**
  *
  * @author scavenger
+ * 
+ * UTILIZAR OS ITERATORS NO PROCESSO DE CRIACAO DE SUB-LISTAS
+ * 
  */
 public class DataMiningApplication {
 
     public static final String DIR = "files";
     public static final File m_filesDirectory = new File(DIR);
-
-    private static final PcdGettingDataDetailsTask.TaskListener listeter = new PcdGettingDataDetailsTask.TaskListener() {
+    private static final PcdDataMiningTask.TaskListener listeter = new PcdDataMiningTask.TaskListener() {
 
         @Override
         public void taskFinished(List<Pcd> pcdList) {
             System.out.println("DONE!");
-            //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
     };
@@ -53,122 +54,37 @@ public class DataMiningApplication {
             m_filesDirectory.mkdir();
         }
 
-        //if ( )
         SindaDataFetcher dataFetcher = new SindaDataFetcher();
 
-        // a ideia sera dividir essa lista em 3 ou 4 partes e separar o trabalho de mineracao em 3 ou 4 threads
         List<Pcd> pcdList = dataFetcher.getPcdListWithMinimumInfo();
 
+        // divisao de listas!
         int numberOfParts = 4;
         List< List<Pcd>> myLists = splitInSublists(numberOfParts, pcdList);
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfParts);
-        for (int i = 0; i < numberOfParts; i++) {
-            PcdGettingDataDetailsTask task = new PcdGettingDataDetailsTask(myLists.get(i), listeter);
+
+        ListIterator< List<Pcd>> iterator = myLists.listIterator();
+       
+        while (iterator.hasNext()) {
+            List<Pcd> list = iterator.next();
+            iterator.remove();
+            /*
+                Criando uma nova sublista aqui e passando esta para a thread, evita o problema de concorrencia
+                e a existencia de memoria leaks, como tambem melhora o trabalho do collector garbage la na frente
+                quando os dados em memoria ja foram salvos em disco e procisamos liberar a memoria principal.
+            */
+            PcdDataMiningTask task = new PcdDataMiningTask( new ArrayList<>(list),  listeter);
+            
             executor.execute(task);
         }
 
-        executor.shutdown();
+        pcdList.clear();
     }
 
-    static class PcdGettingDataDetailsTask implements Runnable {
-
-        private List<Pcd> m_pcdList;
-        private TaskListener m_listener;
-        private SindaWebpageFetcher m_webPageFetcher = new SindaWebpageFetcher();
-        private SindaPcdParser m_parser = new SindaPcdParser();
-        private ObjectMapper m_mapper;
-
-        public PcdGettingDataDetailsTask(List<Pcd> m_pcdList, final TaskListener listener) {
-            this.m_pcdList = m_pcdList;
-            m_listener = listener;
-        }
-
-        @Override
-        public void run() {
-            m_mapper = new ObjectMapper();
-            ObjectWriter writer = m_mapper.writer(new DefaultPrettyPrinter());
-
-            Date currentDate = Calendar.getInstance().getTime();
-            SimpleDateFormat dateFormat = DateTimeUtils.getInstance(DateTimeUtils.DATE_FORMAT_FOR_FILE);
-
-            for (int i = 0; i < m_pcdList.size(); i++) {
-                Pcd pcd = m_pcdList.get(i);
-                System.out.println("Thread: " + Thread.currentThread().getName() + " GETTING DATA FOR PCD: " + pcd.getId());
-                Document webPage = m_webPageFetcher.fetchPcdInfoPage(pcd.getId(), true);
-                m_parser.parsePcdInfo(webPage, pcd);
-                System.out.println("PCD  " + pcd.getId() + " [DATA INFO OK!] " + Thread.currentThread().getName());
-
-                // ja realizar a subrotina de buscar os dados!
-                // write in JSON FILE!
-                List<PcdData> dataList = queringData(pcd);
-                if (!dataList.isEmpty()) {
-                    System.out.println("PCD  " + pcd.getId() + " [DATA OK!] " + Thread.currentThread().getName());
-                    pcd.setData(dataList);
-                }
-
-                String filename = m_filesDirectory.getPath() + File.separator + String.valueOf(pcd.getId()) + "-" + (pcd.getEstacao().replace(" ", "_"))
-                        + "-" + pcd.getUf() + "-" + dateFormat.format(currentDate) + ".json";
-
-                try {
-
-                    System.out.println("Thread: " + Thread.currentThread().getName() + " writing file: " + filename);
-                    writer.writeValue(new File(filename), pcd);
-                } catch (IOException ex) {
-                    Logger.getLogger(DataMiningApplication.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-            m_listener.taskFinished(m_pcdList);
-            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        private List<PcdData> queringData(Pcd pcd) {
-            Date periodoInicial = pcd.getPeriodoInicial();
-            Date periodoFinal = pcd.getPeriodoFinal();
-            Calendar calendar;
-            List<PcdData> dataList = new ArrayList<>();
-
-            if ((periodoInicial != null) && (periodoFinal != null)) {
-                calendar = Calendar.getInstance();
-                calendar.setTime(periodoInicial);
-
-                Date queryPi = periodoInicial;
-                calendar.add(Calendar.YEAR, 1);
-                Date queryPf = calendar.getTime();
-                QueryParameters param = new QueryParameters.QueryParametersBuilder()
-                        .id(pcd.getId())
-                        .dataInicial(queryPi)
-                        .dataFinal(queryPf)
-                        .build();
-                
-                do {
-                    Document dataDocument = m_webPageFetcher.fetchPcdDataTablePage(param);
-                    dataList.addAll( m_parser.parsePcdDataTable(dataDocument) );
-                    
-                    calendar.setTime(queryPf);
-                    calendar.add(Calendar.DATE, 1);
-                    queryPi = calendar.getTime();
-                    calendar.add(Calendar.YEAR, 1);
-                    queryPf = calendar.getTime();
-
-                    param.setDataInicial(queryPi);
-                    param.setDataFinal(queryPf);
-
-                } while (queryPi.compareTo(periodoFinal) <= 0);
-
-            }
-            return dataList;
-        }
-
-        public interface TaskListener {
-
-            void taskFinished(List<Pcd> pcdList);
-            // .. taskCanceled
-            // .. taskError
-        }
-    }
-
+    /* UTILIZAR ITERATOR NA LOGICA DESSE METODO,
+       JA MELHORA O DESEMPENHO
+     */
     public static List< List<Pcd>> splitInSublists(int numberOfSublists, List<Pcd> list) {
         List< List<Pcd>> listOfLists = new ArrayList<>();
         int portion = (list.size() / numberOfSublists);

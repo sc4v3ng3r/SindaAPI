@@ -25,7 +25,7 @@ public class SindaDataFetcherMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
+        /*
         // objeto pegador de paginas do site do sinda!
         SindaWebpageFetcher fetcher = new SindaWebpageFetcher();
         // objeto interpretador de dados das paginas do site sinda!
@@ -56,7 +56,7 @@ public class SindaDataFetcherMain {
                  .dataFinal(dataFinal)
                  .build(); 
          
-         List<PcdData> dataList =  parser.parsePcdDataTable( fetcher.fetchPcdDataTablePage(query) );
+         List<PcdData> dataList =  parser.parsePcdDataTable( fetcher.fetchPcdDataTablePage(query, true) );
         
          
          for(PcdData data: dataList){

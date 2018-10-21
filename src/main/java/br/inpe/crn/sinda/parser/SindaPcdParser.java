@@ -109,7 +109,7 @@ public class SindaPcdParser {
                         .anoFinal(m_yearFormat.format(firstPeriod))
                         .build();
 
-                pcd.setSensores(parsePcdSensorsDescription(m_fetcher.fetchPcdDataTablePage(param)));
+                pcd.setSensores(parsePcdSensorsDescription(m_fetcher.fetchPcdDataTablePage(param, true) ) );
 
             } catch (ParseException ex) {
                 Logger.getLogger(SindaPcdParser.class.getName()).log(Level.SEVERE, null, ex);
@@ -189,63 +189,71 @@ public class SindaPcdParser {
      * @return um List<PcdData>
      */
     public List<PcdData> parsePcdDataTable(final Document htmlDoc) {
-        System.out.println(Thread.currentThread().getName() +  "  PARSING TABLE...  ");
+        System.out.println(Thread.currentThread().getName() + "  PARSING TABLE...  ");
         List<PcdData> dataList = new ArrayList<>();
         List<String> indexes;
 
-        Element tableBody = htmlDoc.getElementsByTag("tbody").first();
-        Iterator<Element> rowsIterator = tableBody.getElementsByTag("tr").iterator();
-        PcdData.PcdDataBuilder pcdBuilder = new PcdData.PcdDataBuilder();
+        // AQUI DA NULL POINTER!
+        if (htmlDoc == null) {
+             Logger.getLogger(SindaWebpageFetcher.class.getName() + "   " +
+                Thread.currentThread().getName() + "  parsePcdDataTable "  );
+            //System.out.println("");
 
-        //int indexCounter;
-        if (rowsIterator.hasNext()) {
-            indexes = gettingColumnsDescription(rowsIterator.next());
+        } else {
+            Element tableBody = htmlDoc.getElementsByTag("tbody").first();
+            Iterator<Element> rowsIterator = tableBody.getElementsByTag("tr").iterator();
+            PcdData.PcdDataBuilder pcdBuilder = new PcdData.PcdDataBuilder();
 
-            if (!indexes.isEmpty()) {
-                String pcdDataColumns = "";
-                // colocando os indices em uma unica string. os split podera ser feito com um '#'
-                for (String index : indexes) {
-                    pcdDataColumns += index + "#";
-                }
+            //int indexCounter;
+            if (rowsIterator.hasNext()) {
+                indexes = gettingColumnsDescription(rowsIterator.next());
 
-                // obtendo os valores de cada linha(TUPLAS) da tabela de dados. 
-                while (rowsIterator.hasNext()) {
-                    Element row = rowsIterator.next();
-                    Iterator<Element> dataValuesIterator = row.getElementsByTag("td").iterator();
+                if (!indexes.isEmpty()) {
+                    String pcdDataColumns = "";
+                    // colocando os indices em uma unica string. os split podera ser feito com um '#'
+                    for (String index : indexes) {
+                        pcdDataColumns += index + "#";
+                    }
 
-                    String dataStringValues = "";
+                    // obtendo os valores de cada linha(TUPLAS) da tabela de dados. 
+                    while (rowsIterator.hasNext()) {
+                        Element row = rowsIterator.next();
+                        Iterator<Element> dataValuesIterator = row.getElementsByTag("td").iterator();
 
-                    while (dataValuesIterator.hasNext()) {
-                        String value = dataValuesIterator.next().text();
-                        if (value.isEmpty()) {
-                            value = " ";
+                        String dataStringValues = "";
+
+                        while (dataValuesIterator.hasNext()) {
+                            String value = dataValuesIterator.next().text();
+                            if (value.isEmpty()) {
+                                value = " ";
+                            }
+                            dataStringValues += value + "#";
                         }
-                        dataStringValues += value + "#";
-                    }
 
-                    String date = dataStringValues.split("#")[0];
-                    Date collectDate = null;
-                    
-                    try {
-                        collectDate = m_dateTimeFormat.parse(date);
-                    } 
-                    
-                    catch (Exception ex) {
-                        collectDate = new Date();
-                    }
+                        String date = dataStringValues.split("#")[0];
+                        Date collectDate = null;
 
-                    PcdData pcdData = pcdBuilder
-                            .data(dataStringValues)
-                            .dataColumns(pcdDataColumns)
-                            .dataHoraColeta(collectDate)
-                            .build();
+                        try {
+                            collectDate = m_dateTimeFormat.parse(date);
+                        } catch (Exception ex) {
+                            collectDate = new Date();
+                        }
 
-                    dataList.add(pcdData);
-                }// fim da obtencao dos valores
+                        PcdData pcdData = pcdBuilder
+                                .data(dataStringValues)
+                                .dataColumns(pcdDataColumns)
+                                .dataHoraColeta(collectDate)
+                                .build();
+
+                        dataList.add(pcdData);
+                    }// fim da obtencao dos valores
+                }
             }
+
+            dataList.remove(dataList.size() - 1);
+
         }
 
-        dataList.remove(dataList.size() - 1);
         return dataList;
     }
 
