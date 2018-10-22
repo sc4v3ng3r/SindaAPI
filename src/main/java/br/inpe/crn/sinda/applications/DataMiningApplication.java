@@ -6,28 +6,13 @@
 package br.inpe.crn.sinda.applications;
 
 import br.inpe.crn.sinda.model.Pcd;
-import br.inpe.crn.sinda.model.PcdData;
-import br.inpe.crn.sinda.network.QueryParameters;
 import br.inpe.crn.sinda.network.SindaDataFetcher;
-import br.inpe.crn.sinda.network.SindaWebpageFetcher;
-import br.inpe.crn.sinda.parser.SindaPcdParser;
-import br.inpe.crn.sinda.utility.DateTimeUtils;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.jsoup.nodes.Document;
 
 /**
  *
@@ -40,7 +25,8 @@ public class DataMiningApplication {
 
     public static final String DIR = "files";
     public static final File m_filesDirectory = new File(DIR);
-    private static final PcdDataMiningTask.TaskListener listeter = new PcdDataMiningTask.TaskListener() {
+    
+    private static final PcdDataMiningTask.TaskListener listener = new PcdDataMiningTask.TaskListener() {
 
         @Override
         public void taskFinished(List<Pcd> pcdList) {
@@ -60,11 +46,11 @@ public class DataMiningApplication {
 
         // divisao de listas!
         int numberOfParts = 4;
-        List< List<Pcd>> myLists = splitInSublists(numberOfParts, pcdList);
+        List< List<Pcd> > myLists = splitInSublists( numberOfParts, pcdList );
 
-        ExecutorService executor = Executors.newFixedThreadPool(numberOfParts);
-
-        ListIterator< List<Pcd>> iterator = myLists.listIterator();
+        
+        ExecutorService executor = Executors.newFixedThreadPool( numberOfParts );
+        ListIterator< List<Pcd> > iterator = myLists.listIterator();
        
         while (iterator.hasNext()) {
             List<Pcd> list = iterator.next();
@@ -74,11 +60,13 @@ public class DataMiningApplication {
                 e a existencia de memoria leaks, como tambem melhora o trabalho do collector garbage la na frente
                 quando os dados em memoria ja foram salvos em disco e procisamos liberar a memoria principal.
             */
-            PcdDataMiningTask task = new PcdDataMiningTask( new ArrayList<>(list),  listeter);
-            
-            executor.execute(task);
+            PcdDataMiningTask task = new PcdDataMiningTask( new ArrayList<>(list),  listener);
+            executor.execute( task );
         }
-
+        
+        
+        System.out.println("executor shutting down!");
+        executor.shutdown();
         pcdList.clear();
     }
 
@@ -86,14 +74,14 @@ public class DataMiningApplication {
        JA MELHORA O DESEMPENHO
      */
     public static List< List<Pcd>> splitInSublists(int numberOfSublists, List<Pcd> list) {
-        List< List<Pcd>> listOfLists = new ArrayList<>();
+        List< List<Pcd> > listOfLists = new ArrayList<>();
         int portion = (list.size() / numberOfSublists);
         int startIndex = 0;
         int endIndex = portion;
         int total = 0;
 
-        System.out.println("TOTAL ITENS: " + list.size());
-        System.out.println("ITENS POR SUBLIST: " + portion);
+        System.out.println( "TOTAL ITENS: " + list.size() );
+        System.out.println( "ITENS POR SUBLIST: " + portion );
 
         for (int i = 0; i < numberOfSublists; i++) {
             List<Pcd> ref = list.subList(startIndex, endIndex);
@@ -101,14 +89,15 @@ public class DataMiningApplication {
 
             listOfLists.add(ref);
             System.out.println("NEW SUBLIST WITH " + startIndex + " and " + (endIndex - 1));
+            
             startIndex = endIndex;
             endIndex += (portion + 1);
 
-            if (endIndex > list.size()) {
+            if ( endIndex > list.size() ) {
                 endIndex = list.size();
             }
+            
         }
-
         System.out.println("TOTAL: " + total);
         return listOfLists;
     }

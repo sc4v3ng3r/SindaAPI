@@ -1,4 +1,4 @@
-br/inpe/crn/sinda/applications/DataMiningApplication$PcdGettingDataDetailsTask.class
+br/inpe/crn/sinda/applications/PcdDataMiningTask.class
 br/inpe/crn/sinda/exemplos/ExemploPegarTodasAsPCDs.class
 br/inpe/crn/sinda/exemplos/SindaDataFetcherMain.class
 br/inpe/crn/sinda/model/Pcd.class
@@ -11,7 +11,6 @@ br/inpe/crn/sinda/applications/DataMiningApplication$1.class
 br/inpe/crn/sinda/network/QueryParameters.class
 br/inpe/crn/sinda/network/SindaWebpageFetcher.class
 br/inpe/crn/sinda/network/SindaRequestParameters.class
-br/inpe/crn/sinda/applications/DataMiningApplication$PcdGettingDataDetailsTask$TaskListener.class
 br/inpe/crn/sinda/network/SindaDataFetcher.class
 br/inpe/crn/sinda/applications/DataMiningApplication.class
 br/inpe/crn/sinda/network/QueryParameters$1.class
@@ -19,3 +18,4 @@ br/inpe/crn/sinda/model/PcdData.class
 br/inpe/crn/sinda/exemplos/ProgramaExemplo.class
 br/inpe/crn/sinda/network/SindaRequestHeaders.class
 br/inpe/crn/sinda/parser/SindaPcdParser.class
+br/inpe/crn/sinda/applications/PcdDataMiningTask$TaskListener.class

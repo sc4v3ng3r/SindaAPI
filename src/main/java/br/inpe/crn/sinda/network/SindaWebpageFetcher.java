@@ -34,13 +34,15 @@ public class SindaWebpageFetcher {
     //private int timeoutCounter = 0;
 
     private final String userAgent = "SindaWebpageFetcher";
+    
     private Connection m_infoPageConnection = Jsoup.connect(SindaURLs.PCD_INFO_URL);
+   
     private Connection m_dataQueryConnection = 
             Jsoup.connect(SindaURLs.PCD_DATA_QUERY_URL)
             .ignoreContentType(true)
                         .maxBodySize(10 * 1024 * 1024)
                         .timeout(timeout)
-                        .headers(SindaRequestHeaders.DEFAULT_HEADERS);
+                        .headers( SindaRequestHeaders.DEFAULT_HEADERS );
 
     public SindaWebpageFetcher() {
 
@@ -118,7 +120,9 @@ public class SindaWebpageFetcher {
                 retryTimeout = false;
 
                 //System.out.println("SindaWebpageFetcher::fetchPcdInfoPage [DONE] " + Thread.currentThread().getName());
-            } catch (SocketTimeoutException timeoutEx) {
+            } 
+            
+            catch (SocketTimeoutException timeoutEx) {
                 System.out.println(SindaWebpageFetcher.class.getName()
                         + "fetchPcdInfoPage::" + timeoutEx.getMessage());
                 timeOutCounter += 1;
@@ -145,6 +149,7 @@ public class SindaWebpageFetcher {
      *
      * @param param Parametros de consulta utilizados para construção da tabela
      * de dados.
+     * @param retryTimeout
      * @return Um Document, página web do sistema sinda que contém a tabela de
      * dados.
      */
@@ -153,11 +158,10 @@ public class SindaWebpageFetcher {
         do {
             try {
                 
-                dataTablePage = //Jsoup.connect(SindaURLs.PCD_DATA_QUERY_URL)
-                        m_dataQueryConnection        
-                        .header(SindaRequestHeaders.PROPERTY_CONTENT_LENGTH, String.valueOf(getQueryParamBytes(param)))
-                        .data(getParamToMap(param))
-                        .post();
+                dataTablePage = m_dataQueryConnection        
+                       .header(SindaRequestHeaders.PROPERTY_CONTENT_LENGTH, String.valueOf(getQueryParamBytes(param)))
+                       .data( getParamToMap(param) )
+                       .post();
                 
                 if (dataTablePage != null) {
                     System.out.println(Thread.currentThread().getName() + " TOTAL TABLE LINES RESULTS  " + dataTablePage.getElementsByTag("tr").size());
@@ -172,16 +176,17 @@ public class SindaWebpageFetcher {
             
             catch (SocketTimeoutException ex) {
                 // acontece java.io.IOException: Underlying input stream returned zero bytes
-                // HEAP SPACE 
                 Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
-               // retryTimeout = true;
+                /*
+                    QUando se tem essa excessao, a solução implementada é 
+                        tentar-se conectar novamente.
+                */
             } 
             
             catch (IOException ex) {
                 Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
                 retryTimeout = false;
             }
-            // OCASIONA NULL POINTER EXCEPTION
 
         } while (retryTimeout);
 

@@ -11,6 +11,8 @@ import java.util.List;
 import br.inpe.crn.sinda.utility.DateTimeUtils;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -30,6 +32,8 @@ public class Pcd {
     private Date periodoInicial;
     private Date periodoFinal;
     
+    @OneToMany
+    @JoinColumn(name = "id")
     private List<PcdData> data;
     
     // colocaremos a lsita de sensores aqui?? vai diminuir a redundancia

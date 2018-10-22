@@ -5,10 +5,8 @@
  */
 package br.inpe.crn.sinda.network;
 
-import antlr.Parser;
 import br.inpe.crn.sinda.model.Pcd;
 import br.inpe.crn.sinda.parser.SindaPcdParser;
-import java.util.ArrayList;
 import java.util.List;
 import org.jsoup.nodes.Document;
 
@@ -53,15 +51,6 @@ public class SindaDataFetcher {
             Document infoWebpage = m_webpageFetcher.fetchPcdInfoPage(pcd.getId(),  true);
             m_parser.parsePcdInfo(infoWebpage, pcd);
             System.out.println("DONE!!!");
-           /* if ( (pcd.getPeriodoFinal() != null) && (pcd.getPeriodoInicial()!=null) ){
-                System.out.println("Getting sensors of: " + pcd.getId());   
-                pcd.setSensores(   m_parser.parsePcdSensorsDescription(infoWebpage) );
-                 System.out.println("DONE!");
-            } 
-            else{
-                System.out.println("CANT GET SENSORS OF: " + pcd.getId() + " NO PERIODS!!!!");
-            }
-          */   
         }
         
         return pcdList;

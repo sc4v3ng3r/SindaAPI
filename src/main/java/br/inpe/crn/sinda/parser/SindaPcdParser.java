@@ -35,7 +35,8 @@ public class SindaPcdParser {
     private final SimpleDateFormat m_monthFormat = DateTimeUtils.getInstance(DateTimeUtils.MONTH_FORMAT);
     private final SimpleDateFormat m_yearFormat = DateTimeUtils.getInstance(DateTimeUtils.YEAR_FORMAT);
     private final SimpleDateFormat m_dateTimeFormat = DateTimeUtils.getInstance(DateTimeUtils.DATE_TIME_FORMAT);
-
+    private QueryParameters m_parameters = null;
+    private final QueryParameters.QueryParametersBuilder m_builder = new QueryParameters.QueryParametersBuilder();
     /**
      * Este método interpreta a página Html das listas de PCD's do site do Sinda
      * e retorna a lista das PCD's todas com os dados básicos configurados. Os
@@ -63,7 +64,7 @@ public class SindaPcdParser {
                 builder.uf(dataString[1]);
                 builder.estacao(dataString[2]);
                 pcdList.add(builder.build());
-
+                
             }
 
         } catch (Exception ex) {
@@ -99,17 +100,27 @@ public class SindaPcdParser {
                 Date finalPeriod = m_dateTimeFormat.parse(periodos.get(1));
                 pcd.setPeriodoFinal(finalPeriod);
 
-                QueryParameters param = new QueryParameters.QueryParametersBuilder()
+                if (m_parameters == null){
+                    m_parameters = 
+                            m_builder
                         .id(pcd.getId())
                         .diaInicial(m_dayFormat.format(firstPeriod))
-                        .diaFinal(m_dayFormat.format(firstPeriod))
                         .mesInicial(m_monthFormat.format(firstPeriod))
-                        .mesFinal(m_monthFormat.format(firstPeriod))
                         .anoInicial(m_yearFormat.format(firstPeriod))
+                       .diaFinal(m_dayFormat.format(firstPeriod))
+                        .mesFinal(m_monthFormat.format(firstPeriod)) 
                         .anoFinal(m_yearFormat.format(firstPeriod))
                         .build();
 
-                pcd.setSensores(parsePcdSensorsDescription(m_fetcher.fetchPcdDataTablePage(param, true) ) );
+                } 
+                
+                else {
+                    m_parameters.setId(String.valueOf(pcd.getId() ));
+                    m_parameters.setDataInicial(firstPeriod);
+                    m_parameters.setDataFinal( firstPeriod );
+                }
+                
+                pcd.setSensores(parsePcdSensorsDescription(m_fetcher.fetchPcdDataTablePage(m_parameters, true) ) );
 
             } catch (ParseException ex) {
                 Logger.getLogger(SindaPcdParser.class.getName()).log(Level.SEVERE, null, ex);
