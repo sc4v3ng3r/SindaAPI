@@ -1,4 +1,4 @@
-package br.inpe.crn.sinda.database;
+package br.inpe.crn.sinda.applications;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
