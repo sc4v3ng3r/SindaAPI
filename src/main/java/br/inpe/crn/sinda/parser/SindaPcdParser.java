@@ -18,6 +18,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import br.inpe.crn.sinda.model.Pcd;
 import br.inpe.crn.sinda.model.PcdData;
+import br.inpe.crn.sinda.model.PcdType;
 import br.inpe.crn.sinda.network.QueryParameters;
 import br.inpe.crn.sinda.network.SindaWebpageFetcher;
 import br.inpe.crn.sinda.utility.DateTimeUtils;
@@ -37,6 +38,7 @@ public class SindaPcdParser {
     private final SimpleDateFormat m_dateTimeFormat = DateTimeUtils.getInstance(DateTimeUtils.DATE_TIME_FORMAT);
     private QueryParameters m_parameters = null;
     private final QueryParameters.QueryParametersBuilder m_builder = new QueryParameters.QueryParametersBuilder();
+
     /**
      * Este método interpreta a página Html das listas de PCD's do site do Sinda
      * e retorna a lista das PCD's todas com os dados básicos configurados. Os
@@ -60,11 +62,13 @@ public class SindaPcdParser {
                 Element option = iterator.next();
                 dataString = option.text().split("-");// { [0] ID, [1] UF, [2] STATION }
 
-                builder.id(Long.parseLong(dataString[0]));
-                builder.uf(dataString[1]);
-                builder.estacao(dataString[2]);
+                if ((dataString != null) || (dataString.length > 0)) {
+                    builder.id(Long.parseLong(dataString[0]));
+                    builder.uf(dataString[1]);
+                    builder.estacao(dataString[2]);
+                }
                 pcdList.add(builder.build());
-                
+
             }
 
         } catch (Exception ex) {
@@ -78,7 +82,13 @@ public class SindaPcdParser {
      * Esse interpreta a página do sinda que possui informações de localidade e
      * período de funcionamento de uma determinada PCD. Ele retorna a PCD com
      * seus dados completos caso eles existam na página.
-     *
+     * Obtem:
+     *  Periodo Inicial,
+     *  Perido FInal,
+     * Altitude,
+     * Latitude,
+     * Longitude,
+     * Municipio
      * @param htmlDoc Página html do sinda para ser interpretada.
      * @param pcd PCD que terá seus dados preenchidos.
      * @return retorna a pcd que entrou como parâmetro com os dados preenchidos
@@ -90,46 +100,14 @@ public class SindaPcdParser {
 
         if (periodos.size() == 2) {
             try {
-                //SimpleDateFormat dayFormat = DateTimeUtil
-                //SimpleDateFormat monthFormat = DateTimeUtils.SIMPLE_MONTH_DATE_FORMAT;
-                //SimpleDateFormat yearFormat = DateTimeUtils.SIMPLE_YEAR_DATE_FORMAT;
-
-                Date firstPeriod = m_dateTimeFormat.parse(periodos.get(0));
-                pcd.setPeriodoInicial(firstPeriod);
-
-                Date finalPeriod = m_dateTimeFormat.parse(periodos.get(1));
-                pcd.setPeriodoFinal(finalPeriod);
-
-                if (m_parameters == null){
-                    m_parameters = 
-                            m_builder
-                        .id(pcd.getId())
-                        .diaInicial(m_dayFormat.format(firstPeriod))
-                        .mesInicial(m_monthFormat.format(firstPeriod))
-                        .anoInicial(m_yearFormat.format(firstPeriod))
-                       .diaFinal(m_dayFormat.format(firstPeriod))
-                        .mesFinal(m_monthFormat.format(firstPeriod)) 
-                        .anoFinal(m_yearFormat.format(firstPeriod))
-                        .build();
-
-                } 
-                
-                else {
-                    m_parameters.setId(String.valueOf(pcd.getId() ));
-                    m_parameters.setDataInicial(firstPeriod);
-                    m_parameters.setDataFinal( firstPeriod );
-                }
-                
-                pcd.setSensores(parsePcdSensorsDescription(m_fetcher.fetchPcdDataTablePage(m_parameters, true) ) );
-
-            } catch (ParseException ex) {
+                pcd.setPeriodoInicial( m_dateTimeFormat.parse( periodos.get(0) ) );
+                pcd.setPeriodoFinal(  m_dateTimeFormat.parse(  periodos.get(1)  ) );
+            }
+            catch (ParseException ex) {
                 Logger.getLogger(SindaPcdParser.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-        }
-
-        //Inicial: , Final: Municipio: Rio Branco/ AC, Latitude: -9.952, Longitude: -67.857, Altitude: 185
-        /*
+            //Inicial: , Final: Municipio: Rio Branco/ AC, Latitude: -9.952, Longitude: -67.857, Altitude: 185
+            /*
          = {
             0 "Inicial: " 
             1 "Final: Municipio: Rio Branco/ AC"
@@ -137,35 +115,39 @@ public class SindaPcdParser {
             3 "Longitude: xxxtyyyy"
             4 "Altitude: xxxxx"
         };
-         */
-        //System.out.println(input.ownText());
-        String dataInfo[] = input.ownText().trim().split(",");
+             */
+            //System.out.println(input.ownText());
+            String dataInfo[] = input.ownText().trim().split(",");
 
-        if (dataInfo.length == 5) {
-            String municipio = dataInfo[1].substring(18).trim();
-            String latitude = dataInfo[2].split(":")[1].trim();
-            String longitude = dataInfo[3].split(":")[1].trim();
-            String altitude = " ";
-            try {
-                altitude = dataInfo[4].split(":")[1].trim();
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                System.out.println("PCD ID: " + pcd.getId() + " " + pcd.getUf() + " " + pcd.getEstacao() + " NAO TEM ALTITUDE DEFINIDA ");
+            if (dataInfo.length == 5) {
+                String municipio = dataInfo[1].substring(18).trim();
+                String latitude = dataInfo[2].split(":")[1].trim();
+                String longitude = dataInfo[3].split(":")[1].trim();
+                String altitude = " ";
+                
+                try {
+                    altitude = dataInfo[4].split(":")[1].trim();
+                } 
+                
+                catch (ArrayIndexOutOfBoundsException ex) {
+                    System.out.println("PCD ID: " + pcd.getId() + " " + pcd.getUf() + " " + pcd.getEstacao() + " NAO TEM ALTITUDE DEFINIDA ");
+                }
+
+                pcd.setMunicipio(municipio);
+                pcd.setAltitude(altitude);
+                pcd.setLatitude(latitude);
+                pcd.setLongitude(longitude);
+
+                //System.out.println( pcd );
+            } else {
+                pcd.setMunicipio("");
+                pcd.setAltitude("");
+                pcd.setLatitude("");
+                pcd.setLongitude("");
+                System.out.println("PCD " + pcd.getId() + " BUGADA!");
             }
 
-            pcd.setMunicipio(municipio);
-            pcd.setAltitude(altitude);
-            pcd.setLatitude(latitude);
-            pcd.setLongitude(longitude);
-
-            //System.out.println( pcd );
-        } else {
-            pcd.setMunicipio("");
-            pcd.setAltitude("");
-            pcd.setLatitude("");
-            pcd.setLongitude("");
-            System.out.println("PCD " + pcd.getId() + " BUGADA!");
         }
-
         return pcd;
     }
 
@@ -199,6 +181,36 @@ public class SindaPcdParser {
      * @param htmlDoc página web com a tabela de dados
      * @return um List<PcdData>
      */
+    public PcdType parsePcdType(final Document tableDoc) {
+        List<String> indexes;
+        PcdType type = null;
+       
+        if (tableDoc == null) {
+            Logger.getLogger(SindaWebpageFetcher.class.getName() + "   "
+                    + Thread.currentThread().getName() + "  parsePcdType::NULL DATA TABLE!");
+            //System.out.println("");
+        } 
+        
+        else {
+            Element tableBody = tableDoc.getElementsByTag("tbody").first();
+            Iterator<Element> rowsIterator = tableBody.getElementsByTag("tr").iterator();
+            //int indexCounter;
+            if ( rowsIterator.hasNext() ) {
+                indexes = gettingColumnsDescription(rowsIterator.next());
+
+                if ( !indexes.isEmpty() ) {
+                     type = new PcdType();
+                    // colocando os indices em uma unica string. os split podera ser feito com um '#'
+                    for (String sensor : indexes) {
+                        type.addSensor( sensor );
+                    }
+                }
+            }
+        }
+        return type;
+    }
+
+    /*AINDA ESTAR OBTENDO AS COLUMNAS,  POREM ESTA IGNORANDO..*/
     public List<PcdData> parsePcdDataTable(final Document htmlDoc) {
         System.out.println(Thread.currentThread().getName() + "  PARSING TABLE...  ");
         List<PcdData> dataList = new ArrayList<>();
@@ -206,10 +218,9 @@ public class SindaPcdParser {
 
         // AQUI DA NULL POINTER!
         if (htmlDoc == null) {
-             Logger.getLogger(SindaWebpageFetcher.class.getName() + "   " +
-                Thread.currentThread().getName() + "  parsePcdDataTable "  );
+            Logger.getLogger(SindaWebpageFetcher.class.getName() + "   "
+                    + Thread.currentThread().getName() + "  parsePcdDataTable::NULL DATA TABLE!");
             //System.out.println("");
-
         } else {
             Element tableBody = htmlDoc.getElementsByTag("tbody").first();
             Iterator<Element> rowsIterator = tableBody.getElementsByTag("tr").iterator();
@@ -246,13 +257,14 @@ public class SindaPcdParser {
 
                         try {
                             collectDate = m_dateTimeFormat.parse(date);
-                        } catch (Exception ex) {
+                        } 
+                        catch (Exception ex) {
                             collectDate = new Date();
                         }
 
                         PcdData pcdData = pcdBuilder
                                 .data(dataStringValues)
-                                .dataColumns(pcdDataColumns)
+                                //.dataColumns(pcdDataColumns)
                                 .dataHoraColeta(collectDate)
                                 .build();
 

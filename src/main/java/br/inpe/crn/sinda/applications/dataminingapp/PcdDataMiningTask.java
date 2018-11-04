@@ -3,11 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.inpe.crn.sinda.applications;
+package br.inpe.crn.sinda.applications.dataminingapp;
 
-import static br.inpe.crn.sinda.applications.DataMiningApplication.m_filesDirectory;
+import static br.inpe.crn.sinda.applications.dataminingapp.DataMiningApplication.m_filesDirectory;
 import br.inpe.crn.sinda.model.Pcd;
 import br.inpe.crn.sinda.model.PcdData;
+import br.inpe.crn.sinda.model.PcdType;
 import br.inpe.crn.sinda.network.QueryParameters;
 import br.inpe.crn.sinda.network.SindaWebpageFetcher;
 import br.inpe.crn.sinda.parser.SindaPcdParser;
@@ -35,11 +36,11 @@ public class PcdDataMiningTask implements Runnable {
         private List<Pcd> m_pcdList;
         private TaskListener m_listener;
         
-        private SindaWebpageFetcher m_webPageFetcher = new SindaWebpageFetcher();
-        private SindaPcdParser m_parser = new SindaPcdParser();
+        private final SindaWebpageFetcher m_webPageFetcher = new SindaWebpageFetcher();
+        private final SindaPcdParser m_parser = new SindaPcdParser();
         
-        private ObjectMapper m_mapper = new ObjectMapper();
-        private ObjectWriter m_writer = m_mapper.writer(new DefaultPrettyPrinter());
+        private final ObjectMapper m_mapper = new ObjectMapper();
+        private final ObjectWriter m_writer = m_mapper.writer(new DefaultPrettyPrinter());
         
         public PcdDataMiningTask(List<Pcd> m_pcdList, final TaskListener listener) {
             this.m_pcdList = m_pcdList;
@@ -56,19 +57,18 @@ public class PcdDataMiningTask implements Runnable {
             
             while (it.hasNext() ) {
                 Pcd pcd = it.next();
-                   
                 System.out.println("Thread: " + Thread.currentThread().getName() + " GETTING DATA FOR PCD: " + pcd.getId());
                 
-                Document webPage = m_webPageFetcher.fetchPcdInfoPage(pcd.getId(), true);/*Obtem a pagina da web do Sinda que contem
+                Document pcdInfoWebpage = m_webPageFetcher.fetchPcdInfoPage(pcd.getId(), true);/*Obtem a pagina da web do Sinda que contem
                 informações sobre a PCD. EX: latitude, longitude, altitude, periodo inicial & final...*/
-                m_parser.parsePcdInfo(webPage, pcd); // interpratamos os dados da pagina e o salvamos no objeto java pcd.
-               
+                m_parser.parsePcdInfo(pcdInfoWebpage, pcd); // interpratamos os dados da pagina e o salvamos no objeto java pcd.
+                
                 System.out.println("PCD  " + pcd.getId() + " [DATA INFO OK!] " + Thread.currentThread().getName());
 
                 // ja realizar a subrotina de buscar os dados!
                 // write in JSON FILE!
                 List<PcdData> dataList = queryAllPcdDataHistory(pcd);
-
+                
                 if (!dataList.isEmpty()) {
                     System.out.println("PCD  " + pcd.getId() + " [QUERYING DATA OK!] " + Thread.currentThread().getName());
                     pcd.setData(dataList);
@@ -77,16 +77,16 @@ public class PcdDataMiningTask implements Runnable {
                 String filename = m_filesDirectory.getPath() + File.separator + String.valueOf(pcd.getId()) + "-"
                         + (pcd.getEstacao().replace(" ", "_").replace("/", "_")) // USAR UMA EXPRESSAO RELUGAR!
                         + "-" + pcd.getUf() + "-" + dateFormat.format(currentDate) + ".json";
-
+                
                 try {
                     System.out.println("Thread: " + Thread.currentThread().getName() + " writing file: " + filename);
                     m_writer.writeValue(new File(filename), pcd);
                     // removemos o tem PCD com seus dados da lista, para o collecotr garbage ficar de olho nele e remove-lo da memoria
-
                 } 
                 
                 catch (IOException ex) {
-                    Logger.getLogger(DataMiningApplication.class.getName()).log(Level.SEVERE, null, ex);
+                    
+                    Logger.getLogger(DataMiningApplication.class.getName()).log(Level.SEVERE, null,  ex);
                 }
 
                 it.remove();
@@ -98,7 +98,10 @@ public class PcdDataMiningTask implements Runnable {
 
         private List<PcdData> queryAllPcdDataHistory(Pcd pcd) {
             SimpleDateFormat fmt = DateTimeUtils.getInstance(DateTimeUtils.DATE_TIME_FORMAT);
-
+            
+            boolean typeFlag = false;
+            //ReentrantLock locker = new ReentrantLock(true);
+            PcdTypeMap typeMap = PcdTypeMap.getInstance();
             Date periodoInicial = pcd.getPeriodoInicial();
             Date periodoFinal = pcd.getPeriodoFinal();
             ArrayList<PcdData> dataList = new ArrayList<>();
@@ -127,9 +130,26 @@ public class PcdDataMiningTask implements Runnable {
                             + " |PF:  " + fmt.format(queryPf));
 
                     Document dataTableHtmlDoc = m_webPageFetcher.fetchPcdDataTablePage( param, true );
+                    
+                    /*So ENTRA AQUI UMA UNICA VEZ!!!!*/
+                    if (!typeFlag){
+                         PcdType type = m_parser.parsePcdType(dataTableHtmlDoc);
+                         if (type != null){
+                            if (!typeMap.exist( type.getSensores())){
+                                typeMap.add(type);
+                                pcd.setTipo(type);
+                                System.out.println("Thread " + Thread.currentThread().getName() + " ADDING TYPE 0" + type );
+                            } 
+                            else {
+                                System.out.println("Thread " + Thread.currentThread().getName() + " EXIST TYPE " + type );
+                                pcd.setTipo( typeMap.get( type.getSensores() ) );
+                            }
+                        }
+                         typeFlag = true;
+                    }
+                  
                     dataList.addAll(0, m_parser.parsePcdDataTable( dataTableHtmlDoc ) );
                     // fazendo pre-append com os dados mais recentes
-
                     calendar.setTime(queryPf);
                     calendar.add(Calendar.DATE, 1);
                     queryPi = calendar.getTime();

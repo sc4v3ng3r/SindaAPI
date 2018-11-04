@@ -29,6 +29,8 @@
                 <jpda.listen>true</jpda.listen>
             </properties>
         </action>
+        
+       
         <action>
             <actionName>profile</actionName>
             <packagings>
@@ -43,4 +45,5 @@
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
+       
     </actions>

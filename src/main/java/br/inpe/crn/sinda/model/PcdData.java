@@ -5,32 +5,42 @@
  */
 package br.inpe.crn.sinda.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.Transient;
 
 /**
  *
  * @author scavenger
  */
 @Entity
-public class PcdData {
+public class PcdData implements Serializable {
     
     @Id
+    @GeneratedValue
     private long id;
     
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date dataHoraColeta;
-    private String dataValues;
+    private String sensorsDataValues;
+  
+    /* VAI SUMIR */
+   
+    /*@Transient
     private String dataColumns;
-
+    */
     // necessario para o hibernate
     public PcdData() {}
 
     public PcdData(PcdDataBuilder builder){
         this.id = builder.id;
         this.dataHoraColeta = builder.dataHoraColeta;
-        this.dataValues = builder.data;
-        this.dataColumns = builder.dataColumns;
+        this.sensorsDataValues = builder.data;
+        //this.dataColumns = builder.dataColumns;
     }
     
     public long getId() {
@@ -50,13 +60,14 @@ public class PcdData {
     }
 
     public String getData() {
-        return dataValues;
+        return sensorsDataValues;
     }
 
     public void setData(String pcdData) {
-        this.dataValues = pcdData;
+        this.sensorsDataValues = pcdData;
     }
 
+    /*
     public String getDataColumns() {
         return dataColumns;
     }
@@ -64,19 +75,19 @@ public class PcdData {
     public void setDataColumns(String dataColumns) {
         this.dataColumns = dataColumns;
     }
-
+    */
     @Override
     public String toString() {
         return /*"ID: " + this.id + " + " Hora coleta: " + this.dataHoraColeta +*/
-                "\n data columns: " + this.dataColumns
-                +"\n DATA: " + this.dataValues;
+                /*"\n data columns: " + this.dataColumns
+                +*/"\n DATA: " + this.sensorsDataValues;
     }
     
     public static class PcdDataBuilder{
         private long id;
         private Date dataHoraColeta;
         private String data;
-        private String dataColumns;
+        //private String dataColumns;
         
         public PcdDataBuilder id(final long id){
             this.id = id;
@@ -93,10 +104,10 @@ public class PcdData {
             return this;
         }
         
-        public PcdDataBuilder dataColumns(final String dataColumns){
+        /*public PcdDataBuilder dataColumns(final String dataColumns){
             this.dataColumns = dataColumns;
             return this;
-        }
+        }*/
         
         public PcdData build(){
             /*

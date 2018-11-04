@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.inpe.crn.sinda.applications;
+package br.inpe.crn.sinda.applications.dataminingapp;
 
 import br.inpe.crn.sinda.model.Pcd;
 import br.inpe.crn.sinda.network.SindaDataFetcher;
@@ -21,18 +21,18 @@ import java.util.concurrent.Executors;
  * UTILIZAR OS ITERATORS NO PROCESSO DE CRIACAO DE SUB-LISTAS
  * 
  */
+
 public class DataMiningApplication {
 
     public static final String DIR = "files";
     public static final File m_filesDirectory = new File(DIR);
-    
     private static final PcdDataMiningTask.TaskListener listener = new PcdDataMiningTask.TaskListener() {
 
         @Override
         public void taskFinished(List<Pcd> pcdList) {
             System.out.println("DONE!");
         }
-
+        
     };
 
     public static final void main(String args[]) {
@@ -47,7 +47,6 @@ public class DataMiningApplication {
         // divisao de listas!
         int numberOfParts = 4;
         List< List<Pcd> > myLists = splitInSublists( numberOfParts, pcdList );
-
         
         ExecutorService executor = Executors.newFixedThreadPool( numberOfParts );
         ListIterator< List<Pcd> > iterator = myLists.listIterator();

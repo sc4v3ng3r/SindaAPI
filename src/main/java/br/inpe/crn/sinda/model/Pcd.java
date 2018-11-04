@@ -8,20 +8,25 @@ package br.inpe.crn.sinda.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import br.inpe.crn.sinda.utility.DateTimeUtils;
+import java.io.Serializable;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.Transient;
 
 /**
  *
  * @author scavenger
  */
 @Entity
-public class Pcd {
+public class Pcd implements Serializable {
     
     @Id
+    @GeneratedValue
     private long id;
     private String uf;
     private String estacao;
@@ -29,17 +34,24 @@ public class Pcd {
     private String altitude;
     private String latitude;
     private String longitude;
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date periodoInicial;
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date periodoFinal;
     
     @OneToMany
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "pcd_id")
     private List<PcdData> data;
+        
+    @ManyToOne
+    @JoinColumn(name = "type_id" )
+    private PcdType type;
     
-    // colocaremos a lsita de sensores aqui?? vai diminuir a redundancia
-   //TEM Q SALVAR COMO UMA STRING UNICA SEPARADA POR "#"
+    
+    // VAI SUMIR
+    /*@Transient
     private List<String> sensores = new ArrayList<>();
-    
+    */
     public Pcd(){}
 
     public Pcd( PcdBuilder builder ){
@@ -53,8 +65,18 @@ public class Pcd {
         this.periodoInicial = builder.periodoInicial;
         this.periodoFinal = builder.periodoFinal;
         this.data = builder.data;
-        this.sensores = builder.sensores;
+        //this.sensores = builder.sensores;
     }
+
+    public PcdType getTipo() {
+        return type;
+    }
+
+    public void setTipo(PcdType tipo) {
+        this.type = tipo;
+    }
+    
+    
     
     public long getId() {
         return id;
@@ -76,9 +98,9 @@ public class Pcd {
         return estacao;
     }
     
-    public List<String> getSensores(){
+   /*public List<String> getSensores(){
         return this.sensores;
-    }
+    }*/
 
     public void setEstacao(String estacao) {
         this.estacao = estacao;
@@ -100,9 +122,9 @@ public class Pcd {
         this.altitude = altitude;
     }
 
-    public void setSensores(List<String> sensores){
+    /*public void setSensores(List<String> sensores){
         this.sensores = sensores;
-    }
+    }*/
     
     public String getLatitude() {
         return latitude;
@@ -175,7 +197,7 @@ public class Pcd {
         private Date periodoInicial;
         private Date periodoFinal;
         private List<PcdData> data;
-        private List<String> sensores;
+        //private List<String> sensores;
     
         public PcdBuilder id(final long id){
             this.id = id;
@@ -227,10 +249,10 @@ public class Pcd {
             return this;
         }
     
-        public PcdBuilder sensores(final List<String> sensores){
+       /* public PcdBuilder sensores(final List<String> sensores){
             this.sensores = sensores;
             return this;
-        }
+        }*/
         
         public Pcd build() {
             //COLOCAR AS REGRAS DE EXECCAO!
