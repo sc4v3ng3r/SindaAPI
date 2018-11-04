@@ -62,8 +62,7 @@ public class DataMiningApplication {
             PcdDataMiningTask task = new PcdDataMiningTask( new ArrayList<>(list),  listener);
             executor.execute( task );
         }
-        
-        
+       
         System.out.println("executor shutting down!");
         executor.shutdown();
         pcdList.clear();

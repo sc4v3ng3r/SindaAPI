@@ -28,7 +28,7 @@ public class PcdTypeMap {
     
     private ObjectMapper m_mapper = new ObjectMapper();
     private ObjectWriter m_writer = m_mapper.writer(new DefaultPrettyPrinter() );
-    private static final String FILE = "pcd_types.json ";
+    private static final String FILE = "pcd_types.json";
     private final File m_file = new File(FILE);
     private FileWriter m_fileWriter = null;
     

@@ -59,8 +59,10 @@ public class PcdDataMiningTask implements Runnable {
                 Pcd pcd = it.next();
                 System.out.println("Thread: " + Thread.currentThread().getName() + " GETTING DATA FOR PCD: " + pcd.getId());
                 
-                Document pcdInfoWebpage = m_webPageFetcher.fetchPcdInfoPage(pcd.getId(), true);/*Obtem a pagina da web do Sinda que contem
+                /*Obtem a pagina da web do Sinda que contem
                 informações sobre a PCD. EX: latitude, longitude, altitude, periodo inicial & final...*/
+                Document pcdInfoWebpage = m_webPageFetcher.fetchPcdInfoPage(pcd.getId(), true);
+                
                 m_parser.parsePcdInfo(pcdInfoWebpage, pcd); // interpratamos os dados da pagina e o salvamos no objeto java pcd.
                 
                 System.out.println("PCD  " + pcd.getId() + " [DATA INFO OK!] " + Thread.currentThread().getName());
@@ -81,14 +83,13 @@ public class PcdDataMiningTask implements Runnable {
                 try {
                     System.out.println("Thread: " + Thread.currentThread().getName() + " writing file: " + filename);
                     m_writer.writeValue(new File(filename), pcd);
-                    // removemos o tem PCD com seus dados da lista, para o collecotr garbage ficar de olho nele e remove-lo da memoria
                 } 
                 
                 catch (IOException ex) {
-                    
                     Logger.getLogger(DataMiningApplication.class.getName()).log(Level.SEVERE, null,  ex);
                 }
-
+                
+                  // removemos o tem PCD com seus dados da lista, para o collecotr garbage ficar de olho nele e remove-lo da memoria
                 it.remove();
             }
 
@@ -149,7 +150,8 @@ public class PcdDataMiningTask implements Runnable {
                     }
                   
                     dataList.addAll(0, m_parser.parsePcdDataTable( dataTableHtmlDoc ) );
-                    // fazendo pre-append com os dados mais recentes
+                  
+                    // salto no tempo!
                     calendar.setTime(queryPf);
                     calendar.add(Calendar.DATE, 1);
                     queryPi = calendar.getTime();
