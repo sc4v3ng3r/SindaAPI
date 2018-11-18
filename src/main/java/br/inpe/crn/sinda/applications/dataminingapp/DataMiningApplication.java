@@ -24,8 +24,9 @@ import java.util.concurrent.Executors;
 
 public class DataMiningApplication {
 
-    public static final String DIR = "files";
-    public static final File m_filesDirectory = new File(DIR);
+    public static final String FILES_DIRECTORY = "files";
+    
+    public static final File m_filesDirectory = new File(FILES_DIRECTORY);
     private static final PcdDataMiningTask.TaskListener listener = new PcdDataMiningTask.TaskListener() {
 
         @Override
@@ -35,15 +36,39 @@ public class DataMiningApplication {
         
     };
 
+    public static List<Pcd>  removingReadyPcds(List<Pcd> sindaPcdList ){
+         List<String> idsList = PcdMiningHistory.getInstance().m_pcdIdsSaved;
+         
+         if ( (idsList != null)   &&  (!idsList.isEmpty()) ){
+                ListIterator<Pcd> pcdsIterator = sindaPcdList.listIterator();
+                while(pcdsIterator.hasNext()){
+                    Pcd currentPcd = pcdsIterator.next();
+                    for(String currentId: idsList ){
+                        if (String.valueOf( currentPcd.getId()).compareTo(currentId) == 0    ){
+                            pcdsIterator.remove();
+                            break;
+                        }
+                    }
+                }
+         } 
+         
+         else {
+             System.out.println(" HISTORY IS EMPTY YET!");
+         }
+         
+        return sindaPcdList;
+    }
+    
     public static final void main(String args[]) {
-        if (!m_filesDirectory.exists()) {
+        
+        if  (!m_filesDirectory.exists()) {
             m_filesDirectory.mkdir();
         }
-
+        
         SindaDataFetcher dataFetcher = new SindaDataFetcher();
+        List<Pcd> pcdList =   removingReadyPcds( dataFetcher.getPcdListWithMinimumInfo() );
 
-        List<Pcd> pcdList = dataFetcher.getPcdListWithMinimumInfo();
-
+        // verificar quais pcds ja foram registradas em arquivo e elimina-las da lista
         // divisao de listas!
         int numberOfParts = 4;
         List< List<Pcd> > myLists = splitInSublists( numberOfParts, pcdList );
@@ -96,6 +121,7 @@ public class DataMiningApplication {
             }
             
         }
+        
         System.out.println("TOTAL: " + total);
         return listOfLists;
     }

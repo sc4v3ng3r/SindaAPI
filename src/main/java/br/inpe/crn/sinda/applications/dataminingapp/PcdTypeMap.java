@@ -44,6 +44,7 @@ public class PcdTypeMap {
       m_map = new HashMap<>();
         try {
             m_fileWriter  = new FileWriter(m_file, true);
+            // load sensors counter !
         } catch (IOException ex) {
             Logger.getLogger(PcdTypeMap.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -83,4 +84,6 @@ public class PcdTypeMap {
     public synchronized int size(){
         return m_map.size();
     }
+    
+    
 }

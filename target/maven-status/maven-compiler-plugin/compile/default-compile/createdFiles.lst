@@ -4,9 +4,7 @@ br/inpe/crn/sinda/model/Pcd.class
 br/inpe/crn/sinda/utility/DateTimeUtils.class
 br/inpe/crn/sinda/applications/dataminingapp/PcdTypeMap.class
 br/inpe/crn/sinda/network/QueryParameters$QueryParametersBuilder.class
-br/inpe/crn/sinda/database/PcdDAO.class
 br/inpe/crn/sinda/network/SindaWebpageFetcher.class
-br/inpe/crn/sinda/database/TableGenerator.class
 br/inpe/crn/sinda/network/SindaRequestParameters.class
 br/inpe/crn/sinda/network/SindaDataFetcher.class
 br/inpe/crn/sinda/model/PcdType.class
@@ -25,4 +23,3 @@ br/inpe/crn/sinda/model/PcdData.class
 br/inpe/crn/sinda/exemplos/ProgramaExemplo.class
 br/inpe/crn/sinda/database/HibernateUtil.class
 br/inpe/crn/sinda/parser/SindaPcdParser.class
-br/inpe/crn/sinda/applications/DatabaseCreatorApplication.class

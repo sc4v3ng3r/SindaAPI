@@ -41,10 +41,12 @@ public class PcdDataMiningTask implements Runnable {
         
         private final ObjectMapper m_mapper = new ObjectMapper();
         private final ObjectWriter m_writer = m_mapper.writer(new DefaultPrettyPrinter());
+        private final PcdMiningHistory m_history;
         
         public PcdDataMiningTask(List<Pcd> m_pcdList, final TaskListener listener) {
             this.m_pcdList = m_pcdList;
             m_listener = listener;
+            m_history = PcdMiningHistory.getInstance();
         }
 
         @Override
@@ -80,9 +82,11 @@ public class PcdDataMiningTask implements Runnable {
                         + (pcd.getEstacao().replace(" ", "_").replace("/", "_")) // USAR UMA EXPRESSAO RELUGAR!
                         + "-" + pcd.getUf() + "-" + dateFormat.format(currentDate) + ".json";
                 
+                // salvando dados da pcd no arquivo!
                 try {
                     System.out.println("Thread: " + Thread.currentThread().getName() + " writing file: " + filename);
                     m_writer.writeValue(new File(filename), pcd);
+                    m_history.save( String.valueOf( pcd.getId() ) );
                 } 
                 
                 catch (IOException ex) {
@@ -93,9 +97,9 @@ public class PcdDataMiningTask implements Runnable {
                 it.remove();
             }
 
+            // essa chamada nao eh thread safe!!!!
             m_listener.taskFinished(m_pcdList);
-            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        } // end of run
+        } 
 
         private List<PcdData> queryAllPcdDataHistory(Pcd pcd) {
             SimpleDateFormat fmt = DateTimeUtils.getInstance(DateTimeUtils.DATE_TIME_FORMAT);
@@ -129,7 +133,7 @@ public class PcdDataMiningTask implements Runnable {
                     
                     System.out.println(Thread.currentThread().getName() + "::queringData |Pi: " + fmt.format(queryPi)
                             + " |PF:  " + fmt.format(queryPf));
-
+                    
                     Document dataTableHtmlDoc = m_webPageFetcher.fetchPcdDataTablePage( param, true );
                     
                     /*So ENTRA AQUI UMA UNICA VEZ!!!!*/
