@@ -14,6 +14,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 
 /**
  *
@@ -25,7 +26,7 @@ public class PcdType implements Serializable {
     @Id
     @GeneratedValue
     private long id;
-    
+    @Ignore
     private String sensores = "";
     private String descricao = "";
 

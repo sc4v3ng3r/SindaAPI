@@ -1,6 +1,7 @@
 br/inpe/crn/sinda/applications/dataminingapp/PcdDataMiningTask.class
 br/inpe/crn/sinda/exemplos/SindaDataFetcherMain.class
 br/inpe/crn/sinda/model/Pcd.class
+br/inpe/crn/sinda/applications/dataminingapp/PcdHistory.class
 br/inpe/crn/sinda/utility/DateTimeUtils.class
 br/inpe/crn/sinda/applications/dataminingapp/PcdTypeMap.class
 br/inpe/crn/sinda/network/QueryParameters$QueryParametersBuilder.class
@@ -17,9 +18,13 @@ br/inpe/crn/sinda/model/Pcd$PcdBuilder.class
 br/inpe/crn/sinda/model/PcdData$PcdDataBuilder.class
 br/inpe/crn/sinda/network/SindaURLs.class
 br/inpe/crn/sinda/network/QueryParameters.class
+br/inpe/crn/sinda/applications/dataminingapp/PcdMiningHistory.class
+br/inpe/crn/sinda/applications/dataminingapp/DataMiningApplicationSettings.class
+br/inpe/crn/sinda/applications/TableGenerator.class
 br/inpe/crn/sinda/applications/dataminingapp/DataMiningApplication.class
 br/inpe/crn/sinda/model/PcdType$PcdTypeBuilder.class
 br/inpe/crn/sinda/model/PcdData.class
 br/inpe/crn/sinda/exemplos/ProgramaExemplo.class
 br/inpe/crn/sinda/database/HibernateUtil.class
+br/inpe/crn/sinda/applications/dataminingapp/DataMiningApplication$2.class
 br/inpe/crn/sinda/parser/SindaPcdParser.class

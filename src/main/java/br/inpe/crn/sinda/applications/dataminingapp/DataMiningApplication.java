@@ -9,6 +9,8 @@ import br.inpe.crn.sinda.model.Pcd;
 import br.inpe.crn.sinda.network.SindaDataFetcher;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ExecutorService;
@@ -25,10 +27,10 @@ import java.util.concurrent.Executors;
 public class DataMiningApplication {
 
     public static final String FILES_DIRECTORY = "files";
-    
+  
     public static final File m_filesDirectory = new File(FILES_DIRECTORY);
     private static final PcdDataMiningTask.TaskListener listener = new PcdDataMiningTask.TaskListener() {
-
+     
         @Override
         public void taskFinished(List<Pcd> pcdList) {
             System.out.println("DONE!");
@@ -37,12 +39,27 @@ public class DataMiningApplication {
     };
 
     public static List<Pcd>  removingReadyPcds(List<Pcd> sindaPcdList ){
+        Collections.sort(sindaPcdList, new Comparator<Pcd>() {
+            @Override
+            public int compare(Pcd t, Pcd t1) {
+                 if(t.getId() < t1.getId())
+                     return -1;
+                 if (t.getId() > t1.getId())
+                     return 1;
+                 
+                 return 0;
+                // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
+        
          List<String> idsList = PcdMiningHistory.getInstance().m_pcdIdsSaved;
          
          if ( (idsList != null)   &&  (!idsList.isEmpty()) ){
                 ListIterator<Pcd> pcdsIterator = sindaPcdList.listIterator();
+                
                 while(pcdsIterator.hasNext()){
                     Pcd currentPcd = pcdsIterator.next();
+                    
                     for(String currentId: idsList ){
                         if (String.valueOf( currentPcd.getId()).compareTo(currentId) == 0    ){
                             pcdsIterator.remove();
@@ -50,7 +67,7 @@ public class DataMiningApplication {
                         }
                     }
                 }
-         } 
+         }
          
          else {
              System.out.println(" HISTORY IS EMPTY YET!");
@@ -60,7 +77,9 @@ public class DataMiningApplication {
     }
     
     public static final void main(String args[]) {
-        
+        DataMiningApplicationSettings settings = DataMiningApplicationSettings.getInstance();
+        settings.saveData();
+        settings = null;
         if  (!m_filesDirectory.exists()) {
             m_filesDirectory.mkdir();
         }

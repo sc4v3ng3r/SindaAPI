@@ -5,6 +5,7 @@
  */
 package br.inpe.crn.sinda.network;
 
+import br.inpe.crn.sinda.applications.dataminingapp.DataMiningApplicationSettings;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
@@ -31,18 +32,20 @@ public class SindaWebpageFetcher {
 
     private Document m_lastFetchedDocument;
     private int timeout = 120 * DateTimeUtils.SECONDS;
+    private static DataMiningApplicationSettings m_settings = DataMiningApplicationSettings.getInstance();
     //private int timeoutCounter = 0;
 
     private final String userAgent = "SindaWebpageFetcher";
     
-    private Connection m_infoPageConnection = Jsoup.connect(SindaURLs.PCD_INFO_URL);
+    private Connection m_infoPageConnection = Jsoup.connect( m_settings.getPCD_QUERY_URL() /*SindaURLs.PCD_INFO_URL */); // paso 2 query!
    
     private Connection m_dataQueryConnection = 
-            Jsoup.connect(SindaURLs.PCD_DATA_QUERY_URL)
+            Jsoup.connect( m_settings.getPCD_DATA_URL() /*SindaURLs.PCD_DATA_QUERY_URL*/) // data table url
             .ignoreContentType(true)
                         .maxBodySize(10 * 1024 * 1024)
                         .timeout(timeout)
                         .headers( SindaRequestHeaders.DEFAULT_HEADERS );
+    
 
     public SindaWebpageFetcher() {
 
@@ -84,7 +87,7 @@ public class SindaWebpageFetcher {
      */
     public Document fetchPcdListPage() {
         try {
-            m_lastFetchedDocument = Jsoup.connect(SindaURLs.PCD_LIST_URL)
+            m_lastFetchedDocument = Jsoup.connect(m_settings.getPCD_LIST_URL()  /*SindaURLs.PCD_LIST_URL*/) // passo1 lists
                     .timeout(timeout)
                     .get();
         } catch (SocketTimeoutException timeout) {

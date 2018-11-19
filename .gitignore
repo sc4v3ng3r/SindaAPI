@@ -2,5 +2,9 @@
 /target/test-classes/
 /target/generated-sources/
 /files
+/files_backup
 /target/SindaAPI-1.0-SNAPSHOT.jar
 
+output.txt
+pcd_history.txt
+pcd_types.json
