@@ -54,6 +54,7 @@ public class PcdDataMiningTask implements Runnable {
             
             Date currentDate = Calendar.getInstance().getTime();
             SimpleDateFormat dateFormat = DateTimeUtils.getInstance(DateTimeUtils.DATE_FORMAT_FOR_FILE);
+             SimpleDateFormat dateTimeFormat = DateTimeUtils.getInstance(DateTimeUtils.DATE_TIME_FORMAT);
 
             ListIterator<Pcd> it = m_pcdList.listIterator();
             
@@ -86,7 +87,11 @@ public class PcdDataMiningTask implements Runnable {
                 try {
                     System.out.println("Thread: " + Thread.currentThread().getName() + " writing file: " + filename);
                     m_writer.writeValue(new File(filename), pcd);
-                    m_history.save( String.valueOf( pcd.getId() ) );
+                    Date lastUpdateDate = pcd.getPeriodoFinal();
+                    String dateString = "";
+                    if (lastUpdateDate!=null)
+                        dateString = dateTimeFormat.format(  lastUpdateDate); 
+                    m_history.add( new PcdHistory(pcd.getId(), dateString) );
                 } 
                 
                 catch (IOException ex) {
@@ -103,7 +108,7 @@ public class PcdDataMiningTask implements Runnable {
 
         private List<PcdData> queryAllPcdDataHistory(Pcd pcd) {
             SimpleDateFormat fmt = DateTimeUtils.getInstance(DateTimeUtils.DATE_TIME_FORMAT);
-            
+           
             boolean typeFlag = false;
             //ReentrantLock locker = new ReentrantLock(true);
             PcdTypeMap typeMap = PcdTypeMap.getInstance();

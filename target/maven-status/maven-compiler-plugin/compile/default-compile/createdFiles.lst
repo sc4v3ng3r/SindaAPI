@@ -14,6 +14,7 @@ br/inpe/crn/sinda/network/SindaRequestHeaders.class
 br/inpe/crn/sinda/exemplos/ExemploPegarTodasAsPCDs.class
 br/inpe/crn/sinda/applications/dataminingapp/DataMiningApplication$1.class
 br/inpe/crn/sinda/applications/dataminingapp/PcdDataMiningTask$TaskListener.class
+br/inpe/crn/sinda/applications/dataminingapp/PcdMiningHistory$1.class
 br/inpe/crn/sinda/model/Pcd$PcdBuilder.class
 br/inpe/crn/sinda/model/PcdData$PcdDataBuilder.class
 br/inpe/crn/sinda/network/SindaURLs.class
@@ -27,4 +28,5 @@ br/inpe/crn/sinda/model/PcdData.class
 br/inpe/crn/sinda/exemplos/ProgramaExemplo.class
 br/inpe/crn/sinda/database/HibernateUtil.class
 br/inpe/crn/sinda/applications/dataminingapp/DataMiningApplication$2.class
+br/inpe/crn/sinda/applications/dataminingapp/PcdTypeMap$1.class
 br/inpe/crn/sinda/parser/SindaPcdParser.class

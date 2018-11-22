@@ -16,8 +16,8 @@ public class PcdHistory {
     
     public PcdHistory(){}
     
-    public PcdHistory(String id, String lastUpdate){
-        setId(id);
+    public PcdHistory(Long id, String lastUpdate){
+        setId(String.valueOf(id));
         setLastUpdate(lastUpdate);
     }
     

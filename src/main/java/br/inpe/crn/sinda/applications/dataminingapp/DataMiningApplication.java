@@ -38,6 +38,7 @@ public class DataMiningApplication {
         
     };
 
+    
     public static List<Pcd>  removingReadyPcds(List<Pcd> sindaPcdList ){
         Collections.sort(sindaPcdList, new Comparator<Pcd>() {
             @Override
