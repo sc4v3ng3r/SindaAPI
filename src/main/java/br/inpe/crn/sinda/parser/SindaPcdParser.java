@@ -72,7 +72,7 @@ public class SindaPcdParser {
             }
 
         } catch (Exception ex) {
-            System.out.println("ERROR at SindaPcdParser::parseToPcdList(Document htmlDoc) | htmlDoc is invalid or null!");
+            //System.out.println("ERROR at SindaPcdParser::parseToPcdList(Document htmlDoc) | htmlDoc is invalid or null!");
         }
 
         return pcdList;
@@ -130,7 +130,7 @@ public class SindaPcdParser {
                 } 
                 
                 catch (ArrayIndexOutOfBoundsException ex) {
-                    System.out.println("PCD ID: " + pcd.getId() + " " + pcd.getUf() + " " + pcd.getEstacao() + " NAO TEM ALTITUDE DEFINIDA ");
+                   // System.out.println("PCD ID: " + pcd.getId() + " " + pcd.getUf() + " " + pcd.getEstacao() + " NAO TEM ALTITUDE DEFINIDA ");
                 }
 
                 pcd.setMunicipio(municipio);
@@ -144,7 +144,7 @@ public class SindaPcdParser {
                 pcd.setAltitude("");
                 pcd.setLatitude("");
                 pcd.setLongitude("");
-                System.out.println("PCD " + pcd.getId() + " BUGADA!");
+                //System.out.println("PCD " + pcd.getId() + " BUGADA!");
             }
 
         }
@@ -212,7 +212,7 @@ public class SindaPcdParser {
 
     /*AINDA ESTAR OBTENDO AS COLUMNAS,  POREM ESTA IGNORANDO..*/
     public List<PcdData> parsePcdDataTable(final Document htmlDoc) {
-        System.out.println(Thread.currentThread().getName() + "  PARSING TABLE...  ");
+       // System.out.println(Thread.currentThread().getName() + "  PARSING TABLE...  ");
         List<PcdData> dataList = new ArrayList<>();
         List<String> indexes;
 

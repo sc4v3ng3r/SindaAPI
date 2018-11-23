@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.inpe.crn.sinda.applications.dataminingapp;
+package br.inpe.crn.sinda.model;
 
 /**
  *

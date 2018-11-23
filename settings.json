@@ -2,7 +2,7 @@
   "pcd_LIST_URL" : "http://sinda.crn.inpe.br/PCD/SITE/novo/site/historico/index.php",
   "pcd_QUERY_URL" : "http://sinda.crn.inpe.br/PCD/SITE/novo/site/historico/passo2.php",
   "pcd_DATA_URL" : "http://sinda.crn.inpe.br/PCD/SITE/novo/site/historico/action.php",
-  "pcd_TYPE_ID_COUNTER" : 0,
+  "pcd_TYPE_ID_COUNTER" : 31,
   "boia_LIST_URL" : "",
   "boia_QUERY_URL" : "",
   "boia_DATA_URL" : "",

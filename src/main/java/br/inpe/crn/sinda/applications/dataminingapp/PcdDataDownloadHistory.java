@@ -5,40 +5,31 @@
  */
 package br.inpe.crn.sinda.applications.dataminingapp;
 
-import br.inpe.crn.sinda.model.PcdType;
+import br.inpe.crn.sinda.model.PcdHistory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 
 /**
  *
  * @author scavenger Essa classe permite registrar & recuperar o historico das
  * PCD's que foram ja mineradas do site do sinda.
  */
-public class PcdMiningHistory {
+public class PcdDataDownloadHistory {
 
-    private static PcdMiningHistory INSTANCE = null;
+    private static PcdDataDownloadHistory INSTANCE = null;
     private static final String FILE = "pcd_history.txt";
     private static final String FILE_JSON = "pcd_history.json";
-
-    //private ObjectMapper m_mapper = new ObjectMapper();
-    //private ObjectWriter m_writer = m_mapper.writer(new DefaultPrettyPrinter() );
     private final File m_file = new File(FILE_JSON);
     private ObjectMapper m_mapper;
     private ObjectWriter m_writer;
@@ -46,7 +37,7 @@ public class PcdMiningHistory {
     private HashMap<String, PcdHistory> m_map;
     List<String> m_pcdIdsSaved;
 
-    private PcdMiningHistory() {
+    private PcdDataDownloadHistory() {
         m_mapper = new ObjectMapper();
         m_writer = m_mapper.writer(new DefaultPrettyPrinter());
 
@@ -59,9 +50,9 @@ public class PcdMiningHistory {
 
     }
 
-    public static final synchronized PcdMiningHistory getInstance() {
+    public static final synchronized PcdDataDownloadHistory getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new PcdMiningHistory();
+            INSTANCE = new PcdDataDownloadHistory();
         }
         return INSTANCE;
     }
@@ -89,13 +80,13 @@ public class PcdMiningHistory {
                     m_map = m_mapper.readValue(m_file, new TypeReference<HashMap<String, PcdHistory>>() {
                     });
                     
-                    System.out.println(" MAP READED SIE: " + m_map.size());
+                   // System.out.println(" MAP READED SIE: " + m_map.size());
                     Iterator<String> keys = m_map.keySet().iterator();
                   
                     while (keys.hasNext()) {
-                        String key =  keys.next();
-                        m_pcdIdsSaved.add( key );
-                        System.out.println("PCD KEY READED : " + key);
+                        //String key =  keys.next();
+                        m_pcdIdsSaved.add(  keys.next() );
+                        //System.out.println("PCD KEY READED : " + key);
                     }
                 }
             } 
@@ -119,35 +110,11 @@ public class PcdMiningHistory {
     
     public synchronized void remove(String pcdId){ m_map.remove(pcdId); }
     
-    /*
-    public synchronized void save(String id) {
-        BufferedWriter bfWriter;
-        
-        try {
-            
-            bfWriter = new BufferedWriter(new FileWriter(m_file, true));
-            bfWriter.append(id);
-            bfWriter.newLine();
-
-            bfWriter.flush();
-            bfWriter.close();
-            System.out.println(Thread.currentThread().getName() + "  ----- ADD TO HISTORY PCD: " + id + "------");
-            m_pcdIdsSaved.add(id);
-            Collections.sort(m_pcdIdsSaved);
-        } 
-        
-        catch (IOException ex) {
-            Logger.getLogger(PcdMiningHistory.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        
-        finally {
-            bfWriter = null;
-            //m_printWriter = null;  
-        }
-    }*/
-    
     public synchronized List<String> getIdsList() {
         return m_pcdIdsSaved;
     }
-
+    
+    public List<PcdHistory> getAllHistory(){
+        return new ArrayList<>(m_map.values());
+    }
 }

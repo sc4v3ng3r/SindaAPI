@@ -5,6 +5,7 @@
  */
 package br.inpe.crn.sinda.applications.dataminingapp;
 
+import br.inpe.crn.sinda.network.SindaURLs;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -19,9 +20,9 @@ import jdk.nashorn.internal.ir.annotations.Ignore;
  * @author scavenger
  */
 public class DataMiningApplicationSettings {
-    String PCD_LIST_URL ="";
-    String PCD_QUERY_URL ="";
-    String PCD_DATA_URL ="";
+    String PCD_LIST_URL = SindaURLs.PCD_LIST_URL;
+    String PCD_QUERY_URL = SindaURLs.PCD_INFO_URL;
+    String PCD_DATA_URL = SindaURLs.PCD_DATA_QUERY_URL;
     int PCD_TYPE_ID_COUNTER=0;
     
     String BOIA_LIST_URL="";
@@ -44,16 +45,18 @@ public class DataMiningApplicationSettings {
     private static DataMiningApplicationSettings INSTANCE;
     
     public static synchronized DataMiningApplicationSettings getInstance(){
-        if (INSTANCE == null){
-            INSTANCE =  loadData();
-            if(INSTANCE == null)
+            
+            if(INSTANCE == null && (m_file.exists()))
+                INSTANCE = loadData();
+                //INSTANCE = new DataMiningApplicationSettings();
+            else if (INSTANCE == null)
                 INSTANCE = new DataMiningApplicationSettings();
-        }
+            
         return INSTANCE;
     }
     
     private DataMiningApplicationSettings(){
-        
+        saveData();
     }
     
     public String getPCD_LIST_URL() {

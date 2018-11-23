@@ -4,7 +4,8 @@
 /files
 /files_backup
 /target/SindaAPI-1.0-SNAPSHOT.jar
-
+/target
+*.jar
 output.txt
 pcd_history.json
 pcd_types.json

@@ -91,7 +91,8 @@ public class SindaWebpageFetcher {
                     .timeout(timeout)
                     .get();
         } catch (SocketTimeoutException timeout) {
-            System.out.println(SindaWebpageFetcher.class.getName() + "::fetchPcdListPage( TIMEOUT");
+            //System.out.println(SindaWebpageFetcher.class.getName() + "::fetchPcdListPage( TIMEOUT");
+             Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, timeout);
         } catch (IOException ex) {
             Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -126,14 +127,14 @@ public class SindaWebpageFetcher {
             } 
             
             catch (SocketTimeoutException timeoutEx) {
-                System.out.println(SindaWebpageFetcher.class.getName()
-                        + "fetchPcdInfoPage::" + timeoutEx.getMessage());
+                /*System.out.println(SindaWebpageFetcher.class.getName()
+                        + "fetchPcdInfoPage::" + timeoutEx.getMessage());*/
                 timeOutCounter += 1;
 
                 if (retryTimeout) {
-                    System.out.println("RETRIYNG time: " + timeOutCounter + "!!!");
+                    //System.out.println("RETRIYNG time: " + timeOutCounter + "!!!");
                 } else {
-                    System.out.println("ABORTING!!!");
+                   // System.out.println("ABORTING!!!");
                 }
 
             } catch (IOException ex) {
@@ -165,14 +166,7 @@ public class SindaWebpageFetcher {
                        .header(SindaRequestHeaders.PROPERTY_CONTENT_LENGTH, String.valueOf(getQueryParamBytes(param)))
                        .data( getParamToMap(param) )
                        .post();
-                
-                if (dataTablePage != null) {
-                    System.out.println(Thread.currentThread().getName() + " TOTAL TABLE LINES RESULTS  " + dataTablePage.getElementsByTag("tr").size());
-                } 
-                
-                else {
-                    System.out.println(Thread.currentThread().getName() + " EMPTY TABLE");
-                }
+               
                 retryTimeout = false;
 
             } 

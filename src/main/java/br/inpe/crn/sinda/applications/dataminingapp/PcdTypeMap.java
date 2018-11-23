@@ -10,14 +10,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SequenceWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -98,11 +95,12 @@ public class PcdTypeMap {
             
             if (data!=null && data.length > 0){
                   m_map = m_mapper.readValue(m_file, new TypeReference<HashMap<String,PcdType>>() {} );
-                  System.out.println( " MAP READED SIE: " + m_map.size());
-                   Iterator<String> keys = m_map.keySet().iterator();
+                  //System.out.println( " MAP READED SIE: " + m_map.size());
+                   
+                  /*Iterator<String> keys = m_map.keySet().iterator();
                    while(keys.hasNext()){
                        System.out.println("KEY READED : " + keys.next());
-                    }
+                    }*/
             }
               
         }

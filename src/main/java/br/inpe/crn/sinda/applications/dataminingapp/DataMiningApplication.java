@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 public class DataMiningApplication {
 
     public static final String FILES_DIRECTORY = "files";
-  
     public static final File m_filesDirectory = new File(FILES_DIRECTORY);
     private static final PcdDataMiningTask.TaskListener listener = new PcdDataMiningTask.TaskListener() {
      
@@ -53,7 +52,7 @@ public class DataMiningApplication {
             }
         });
         
-         List<String> idsList = PcdMiningHistory.getInstance().m_pcdIdsSaved;
+         List<String> idsList = PcdDataDownloadHistory.getInstance().m_pcdIdsSaved;
          
          if ( (idsList != null)   &&  (!idsList.isEmpty()) ){
                 ListIterator<Pcd> pcdsIterator = sindaPcdList.listIterator();
@@ -81,6 +80,7 @@ public class DataMiningApplication {
         DataMiningApplicationSettings settings = DataMiningApplicationSettings.getInstance();
         settings.saveData();
         settings = null;
+        
         if  (!m_filesDirectory.exists()) {
             m_filesDirectory.mkdir();
         }
@@ -131,7 +131,7 @@ public class DataMiningApplication {
             total += ref.size();
 
             listOfLists.add(ref);
-            System.out.println("NEW SUBLIST WITH " + startIndex + " and " + (endIndex - 1));
+           // System.out.println("NEW SUBLIST WITH " + startIndex + " and " + (endIndex - 1));
             
             startIndex = endIndex;
             endIndex += (portion + 1);
@@ -142,7 +142,7 @@ public class DataMiningApplication {
             
         }
         
-        System.out.println("TOTAL: " + total);
+        //System.out.println("TOTAL: " + total);
         return listOfLists;
     }
 

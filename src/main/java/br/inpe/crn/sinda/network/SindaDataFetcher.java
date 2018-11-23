@@ -47,10 +47,10 @@ public class SindaDataFetcher {
         List<Pcd> pcdList =  getPcdListWithMinimumInfo();
         
         for(Pcd pcd: pcdList){
-            System.out.println("Getting basic info pf: " + pcd.getId() );
+            //System.out.println("Getting basic info pf: " + pcd.getId() );
             Document infoWebpage = m_webpageFetcher.fetchPcdInfoPage(pcd.getId(),  true);
             m_parser.parsePcdInfo(infoWebpage, pcd);
-            System.out.println("DONE!!!");
+            //System.out.println("DONE!!!");
         }
         
         return pcdList;
