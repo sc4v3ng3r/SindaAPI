@@ -16,6 +16,7 @@
 /home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/applications/dataminingapp/MiningProcessManager.java
 /home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/network/SindaURLs.java
 /home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/applications/dataminingapp/PcdUpdateTask.java
+/home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/applications/dataminingapp/FtpClient.java
 /home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/applications/dataminingapp/DataMiningApplicationSettings.java
 /home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/network/QueryParameters.java
 /home/scavenger/NetBeansProjects/SindaAPI/src/main/java/br/inpe/crn/sinda/network/SindaRequestParameters.java

@@ -45,6 +45,7 @@ public class PcdDataMiningTask implements Runnable {
         private final SindaPcdParser m_parser = new SindaPcdParser();
         private ExtractorLogger m_logger = ExtractorLogger.getInstance();
         private final SimpleDateFormat m_dateTimeFormat = DateTimeUtils.getInstance(DateTimeUtils.DATE_TIME_FORMAT);
+        private FtpClient m_ftpClient = new FtpClient();
         
         private final ObjectMapper m_mapper = new ObjectMapper();
         private final ObjectWriter m_writer = m_mapper.writer(new DefaultPrettyPrinter());
@@ -107,7 +108,7 @@ public class PcdDataMiningTask implements Runnable {
                 }
                     
                 if (!dataList.isEmpty()) {
-                    //System.out.println("PCD  " + pcd.getId() + " [QUERYING DATA OK!] " + Thread.currentThread().getName());
+                    writeIntoLog("PCD  " + pcd.getId() + " [QUERYING DATA OK!] ");
                     pcd.setData(dataList);
                 }
 
@@ -117,16 +118,28 @@ public class PcdDataMiningTask implements Runnable {
                 
                 // salvando dados da pcd no arquivo!
                 try {
-                   // System.out.println("Thread: " + Thread.currentThread().getName() + " writing file: " + filename);
-                    m_writer.writeValue(new File(filename), pcd);
+                   writeIntoLog( "  writing file: " + filename);
+                   File jsonFile = new File(filename);
+                   m_writer.writeValue(jsonFile, pcd);
+                    
+                        // enviar p/ FTP ANOTHER THREAD!
+                        if (m_ftpClient.saveData(jsonFile, "files") ){
+                            //System.out.println("SUCESS SAVING INTO FTP " + jsonFile.getName());
+                            writeIntoLog("SUCESS SAVING INTO FTP " + jsonFile.getName());
+                        } else {
+                            System.out.println("FAULT SAVING INTO FTP " + jsonFile.getName());
+                            writeIntoLog("FAULT SAVING INTO FTP " + jsonFile.getName());
+                        }
+                        
+                    
                     Date lastUpdateDate = pcd.getPeriodoFinal();
                     String dateString = "";
                     
                     if (lastUpdateDate!=null)
                         dateString = m_dateTimeFormat.format(  lastUpdateDate); 
                         m_history.add( new PcdHistory(pcd.getId(), dateString) );
-                        logString = m_dateTimeFormat.format( System.currentTimeMillis() ) + " PCD " + pcd.getId() + " DATA MINING COMPLETE ";
-                        m_logger.write(logString);
+                        writeIntoLog(  m_dateTimeFormat.format( System.currentTimeMillis() ) + " PCD " + pcd.getId() + " DATA MINING COMPLETE " );
+                      //  m_logger.write(logString);
                 } 
                 
                 catch (IOException ex) {
@@ -138,7 +151,10 @@ public class PcdDataMiningTask implements Runnable {
             
             
             }//end do while do estado
+            m_ftpClient.closeConnection();
+            
             m_listener.taskFinished(m_pcdList);
+            writeIntoLog("TASK FINISHED!");
             /*
             while (it.hasNext() ) {
                 

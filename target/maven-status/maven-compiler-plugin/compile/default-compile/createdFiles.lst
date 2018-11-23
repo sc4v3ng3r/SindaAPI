@@ -20,6 +20,7 @@ br/inpe/crn/sinda/model/PcdHistory.class
 br/inpe/crn/sinda/applications/dataminingapp/DataMiningApplication$1.class
 br/inpe/crn/sinda/applications/dataminingapp/ExtractorLogger.class
 br/inpe/crn/sinda/applications/dataminingapp/PcdDataMiningTask$TaskListener.class
+br/inpe/crn/sinda/applications/dataminingapp/FtpClient.class
 br/inpe/crn/sinda/model/Pcd$PcdBuilder.class
 br/inpe/crn/sinda/model/PcdData$PcdDataBuilder.class
 br/inpe/crn/sinda/network/SindaURLs.class

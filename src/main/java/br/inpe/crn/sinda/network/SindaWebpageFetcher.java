@@ -94,7 +94,7 @@ public class SindaWebpageFetcher {
             //System.out.println(SindaWebpageFetcher.class.getName() + "::fetchPcdListPage( TIMEOUT");
              Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, timeout);
         } catch (IOException ex) {
-            Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
         }
         return m_lastFetchedDocument;
     }
@@ -138,7 +138,7 @@ public class SindaWebpageFetcher {
                 }
 
             } catch (IOException ex) {
-                Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
+               // Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
                 retryTimeout = false;
             }
 
@@ -173,7 +173,7 @@ public class SindaWebpageFetcher {
             
             catch (SocketTimeoutException ex) {
                 // acontece java.io.IOException: Underlying input stream returned zero bytes
-                Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
                 /*
                     QUando se tem essa excessao, a solução implementada é 
                         tentar-se conectar novamente.
@@ -181,7 +181,7 @@ public class SindaWebpageFetcher {
             } 
             
             catch (IOException ex) {
-                Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(SindaWebpageFetcher.class.getName()).log(Level.SEVERE, null, ex);
                 retryTimeout = false;
             }
 

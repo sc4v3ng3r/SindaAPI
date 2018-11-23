@@ -32,14 +32,20 @@ public class DataMiningApplicationSettings {
     int BOIA_TYPE_ID_COUNTER=0;
     boolean DATA_MINING_STAGE;
     
+    //ftp settings
+    private String FTP_SERVER ="";
+    private String FTP_USER = "";
+    private String FTP_PASSWORD = "";
+    private int FTP_PORT = 21;
+    
     @Ignore
     private ObjectMapper m_mapper = new ObjectMapper();
     @Ignore
     private ObjectWriter m_writer = m_mapper.writer(new DefaultPrettyPrinter() );
     @Ignore
-    private static final String FILE_SETTINGS = "settings.json";
+    private static final String FILE_SETTINGS_NAME = "settings.json";
     @Ignore
-    private static final File m_file = new File(FILE_SETTINGS);
+    private static final File m_file = new File(FILE_SETTINGS_NAME);
     //private FileWriter m_fileWriter = null;
 
     private static DataMiningApplicationSettings INSTANCE;
@@ -105,6 +111,16 @@ public class DataMiningApplicationSettings {
         saveData();
     }
 
+    public String getFTP_SERVER() {
+        return FTP_SERVER;
+    }
+
+    public void setFTP_SERVER(String FTP_SERVER) {
+        this.FTP_SERVER = FTP_SERVER;
+        saveData();
+    }
+
+    
     public  String getBOIA_QUERY_URL() {
         return BOIA_QUERY_URL;
     }
@@ -131,6 +147,34 @@ public class DataMiningApplicationSettings {
         this.BOIA_TYPE_ID_COUNTER = BOIA_TYPE_ID_COUNTER;
         saveData();
     }
+
+    public String getFTP_USER() {
+        return FTP_USER;
+    }
+
+    public void setFTP_USER(String FTP_USER) {
+        this.FTP_USER = FTP_USER;
+        saveData();
+    }
+
+    public String getFTP_PASSWORD() {
+        return FTP_PASSWORD;
+    }
+
+    public void setFTP_PASSWORD(String FTP_PASSWORD) {
+        this.FTP_PASSWORD = FTP_PASSWORD;
+        saveData();
+    }
+
+    public int getFTP_PORT() {
+        return FTP_PORT;
+    }
+
+    public void setFTP_PORT(int FTP_PORT) {
+        this.FTP_PORT = FTP_PORT;
+        saveData();
+    }
+    
     
     public  void saveData (){
         
@@ -161,4 +205,42 @@ public class DataMiningApplicationSettings {
         
         return TEST;
     }
+
+    @Override
+    public String toString() {
+        /*
+             String PCD_LIST_URL = SindaURLs.PCD_LIST_URL;
+    String PCD_QUERY_URL = SindaURLs.PCD_INFO_URL;
+    String PCD_DATA_URL = SindaURLs.PCD_DATA_QUERY_URL;
+    int PCD_TYPE_ID_COUNTER=0;
+    
+    String BOIA_LIST_URL="";
+    String BOIA_QUERY_URL="";
+    String BOIA_DATA_URL ="";
+    
+    int BOIA_TYPE_ID_COUNTER=0;
+    boolean DATA_MINING_STAGE;
+    
+    //ftp settings
+    private String FTP_SERVER ="localhost";
+    private String FTP_USER = "scavenger";
+    private String FTP_PASSWORD = "sc4v3ng3rhacker";
+    private int FTP_PORT = 21;
+        */
+           return "\n PCD_LIST_URL: " + PCD_LIST_URL + "\n"
+                   +   " PCD_QUERY_URL: " + PCD_QUERY_URL + "\n"
+                   +    " PCD_DATA_URL: " +  PCD_DATA_URL + "\n"
+                   + " PCD_TYPE_ID_COUNTER: " + PCD_TYPE_ID_COUNTER + "\n"
+                    + " BOIA_LIST_URL: " + BOIA_LIST_URL + "\n"
+                   + " BOIA_QUERY_URL: " + BOIA_QUERY_URL + "\n"
+                   + " BOIA_DATA_URL: " + BOIA_DATA_URL + "\n"
+                   + " BOIA_TYPE_ID_COUNTER: "  + BOIA_TYPE_ID_COUNTER  + "\n"
+                   + " FTP_SERVER: " + FTP_SERVER + "\n"
+                   + " FTP_USER: " + FTP_USER + "\n"
+                   + " FTP_PASSWORD: " + FTP_PASSWORD + "\n"
+                   + " FTP_PORT: " + FTP_PORT + "\n";
+        //  return super.toString(); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
 }

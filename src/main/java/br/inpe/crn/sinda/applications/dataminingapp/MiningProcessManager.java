@@ -28,6 +28,7 @@ public class MiningProcessManager {
     public final String FILES_DIRECTORY = "files";
     private boolean isRunning = false;
     public final File m_filesDirectory = new File(FILES_DIRECTORY);
+    private FtpClient m_client;
     private static final PcdDataMiningTask.TaskListener listener = new PcdDataMiningTask.TaskListener() {
         
         @Override
@@ -56,6 +57,15 @@ public class MiningProcessManager {
 
             DataMiningApplicationSettings settings = DataMiningApplicationSettings.getInstance();
             settings.saveData();
+             
+            m_client = new FtpClient();
+            if ( ! m_client.ftpDirecotryExists("files")){
+                if (!m_client.createFTPDirectory("files") ){
+                    System.out.println("Falha ao criar diretorio no FTP. Os dados em FTP não estarão disponíveis.");
+                }
+            }
+            m_client.closeConnection();
+            
             settings = null;
             if (!m_filesDirectory.exists()) {
                 m_filesDirectory.mkdir();
