@@ -1,5 +1,3 @@
-SindaAPI and application project
-
 Guia de instalação e utilização do SindaExtractor-1.0    #
 ================================================
 
@@ -10,10 +8,8 @@ Guia de instalação e utilização do SindaExtractor-1.0    #
 			Basta Compilar o coódigo fonte, de preferência com auxilo da IDE NetBeans e na pasta do projeto, após a compilação, existirá um diretório
 			chamado target. Nesse diretório encontra-se o executável de extensão jar "SindaEXtractor-1.0-.jar" já FUNCIONAL!.
 			
-			Para colocar esse programa em modo funcional no servidor Gertrudes, faz-se necessário copiar todo o diretório target gerado pela 
-compilação
-			no servidor, póis, neste diretório encontram-se além do exectável, as dependências que o mesmo necessita para funcionar, caso contrário 
-haverá falha
+			Para colocar esse programa em modo funcional no servidor Gertrudes, faz-se necessário copiar todo o diretório target gerado pela compilação
+			no servidor, póis, neste diretório encontram-se além do exectável, as dependências que o mesmo necessita para funcionar, caso contrário haverá falha
 			no momento da execução.
 			
 			Para executar o "SindaExtractor-1.0-.jar" para digitar na linha de comando:  java -jar SindaExtractor-1.0-.jar
@@ -34,17 +30,15 @@ haverá falha
              SindaExtractor >>  set ftp-user-login usuario_do_ftp
              SindaExtractor >> set ftp-user-password usuario_password
              SindaExtractor >> set ftp-server localhost_server
-             SindaExtractor >> set ftp-port 21 					//  A porta 21 já é a padrão, nsó é necessario essa opção caso seja uma porta 
-diferente.
+             SindaExtractor >> set ftp-port 21 					//  A porta 21 já é a padrão, nsó é necessario essa opção caso seja uma porta diferente.
              
              SindaExtractor >> show settings						// exibe as configuraçõe atuais
-             SindaExtractor >> start data-mining				//Inicia o processo de mineração de dados e salva-os localmente & remotamente via 
-FTP.
-             SindaExtractor >> log 25									// exibe em tela as 25 linhas mais recentes do arquivo de  
-log
-             SindaExtractor >> exit										//Infelismente a saída do executável para o 
-processo de mineração ou de atualizaçao dos dados que estiver rodando.
+             SindaExtractor >> start data-mining				//Inicia o processo de mineração de dados e salva-os localmente & remotamente via FTP.
+             SindaExtractor >> log 25									// exibe em tela as 25 linhas mais recentes do arquivo de  log
+             SindaExtractor >> exit										//Infelismente a saída do executável para o processo de mineração ou de atualizaçao dos dados que estiver rodando.
+             																			//pode existir um delay após o comando exit, pois, ele aguarda as threads serem interrompidas e só após isso executa a saída.
              																			
-//pode existir um delay após o comando exit, pois, ele aguarda as threads serem interrompidas e só após isso executa a saída.
              																			
- 
+             																			
+             																			
+             
